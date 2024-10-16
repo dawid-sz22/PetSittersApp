@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
+from django.contrib.postgres.fields import DateTimeRangeField
 # Create your models here.
 
 class CustomUserManager(BaseUserManager):
@@ -33,13 +35,18 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=40)
+    username = models.CharField(max_length=40, unique=True)
     email = models.EmailField(max_length=70,unique=True)
-    date_of_bith = models.DateField(null=True)
+    date_of_birth = models.DateField(null=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    age = models.IntegerField(null=True)
     phone_number = PhoneNumberField(blank=False)
+    address_city = models.CharField(max_length=40)
+    address_street = models.CharField(max_length=40)
+    address_house = models.CharField(max_length=10)
+    profile_picture_url = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     objects = CustomUserManager()
 
@@ -51,9 +58,45 @@ class User(AbstractUser):
 
 class PetSitter(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    experience_in_months = models.IntegerField()
+    daily_rate = models.IntegerField()
+    hourly_rate = models.IntegerField()
+    description_bio = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
 class PetOwner(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    description_bio = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-class PetsCategory(models.Model):
+class PetSpecies(models.Model):
     name = models.CharField(max_length=50)
+    
+class Pet(models.Model):
+    pet_owner = models.ForeignKey(PetOwner, on_delete=models.CASCADE)
+    species = models.ForeignKey(PetSpecies, on_delete=models.CASCADE)
+    breed = models.CharField(max_length=50)
+    age = models.IntegerField()
+    weight = models.IntegerField()
+    info_special_treatment = models.TextField()
+    favorite_activities = models.TextField()
+    feeding_info = models.TextField()
+    photo_URL = models.URLField()
+
+class Service(models.Model):
+    name = models.CharField(max_length=30)
+
+class Visit(models.Model):
+    pet_sitter = models.ForeignKey(PetSitter, on_delete=models.CASCADE)
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE)
+    services = models.ManyToManyField(Service)
+    rating = models.IntegerField(default=1, validators=[MaxValueValidator(5), MinValueValidator(1)])
+    review = models.TextField()
+    date_range_of_visit = DateTimeRangeField()
+    visit_notes = models.TextField()
+    is_accepted = models.BooleanField(default=False)
+
+

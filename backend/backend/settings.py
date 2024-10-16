@@ -44,6 +44,7 @@ INSTALLED_APPS = [
    #'django.contrib.sites',
     'phonenumber_field',
     'rest_framework',
+    'rest_framework.authtoken',
     # 'allauth',
     # 'allauth.account',
     # 'allauth.socialaccount',
@@ -161,12 +162,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 PHONENUMBER_DEFAULT_REGION = 'PL'
 
 REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework.authentication.TokenAuthentication',
-#     ),
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAuthenticated', 
-#     ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated', 
+    ),
     'NON_FIELD_ERRORS_KEY' : 'errors'
 }
 
