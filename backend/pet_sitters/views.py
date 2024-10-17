@@ -1,13 +1,17 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
-from .serializers import SignUpSerializer
-from rest_framework import generics, status, permissions, mixins
+from .serializers import SignUpSerializer, PetSitterSerializer
+from rest_framework import generics, status, permissions, mixins, authentication
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from .models import PetSitter, PetOwner, PetSpecies, Service, Visit
+
+class TokenAuthentication(authentication.TokenAuthentication):
+    authentication.TokenAuthentication.keyword = 'Bearer'
 
 class SignUpUser(generics.GenericAPIView):
     permission_classes = []
@@ -62,12 +66,24 @@ class PetSitterListCreateView(generics.GenericAPIView,
                               mixins.ListModelMixin,
                               mixins.CreateModelMixin):
     
+    permission_classes = [IsAuthenticated]
+    serializer_class = PetSitterSerializer
     queryset = PetSitter.objects.all()
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer.save(user=user)
+        return super().perform_create(serializer)
 
     def get(self, request:Request, *args, **kwargs):
         return self.list(request,*args, **kwargs)
     
     def post(self, request:Request, *args, **kwargs):
+        user = self.request.user
+        user_copy = self.queryset.filter(user=user).exists()
+
+        if user_copy:
+            return Response(data={"error" : "Pet sitter with this user already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        
         return self.create(request,*args, **kwargs)
 
 def index(request):

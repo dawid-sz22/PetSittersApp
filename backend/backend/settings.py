@@ -170,6 +170,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated', 
     ),
     'NON_FIELD_ERRORS_KEY' : 'errors'
+    ''
 }
 
 AUTH_USER_MODEL = "pet_sitters.User"

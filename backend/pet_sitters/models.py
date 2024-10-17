@@ -35,16 +35,16 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=40, unique=True)
+    username = models.CharField(max_length=40, unique=True, blank=False)
     email = models.EmailField(max_length=70,unique=True)
     date_of_birth = models.DateField(null=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    phone_number = PhoneNumberField(blank=False)
+    phone_number = PhoneNumberField(blank=False, unique=True)
     address_city = models.CharField(max_length=40)
     address_street = models.CharField(max_length=40)
-    address_house = models.CharField(max_length=10)
-    profile_picture_url = models.URLField()
+    address_house = models.CharField(max_length=10, blank=True, null=True)
+    profile_picture_url = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -57,7 +57,7 @@ class User(AbstractUser):
         return self.username
 
 class PetSitter(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="pet_sitters")
     experience_in_months = models.IntegerField()
     daily_rate = models.IntegerField()
     hourly_rate = models.IntegerField()
@@ -65,26 +65,39 @@ class PetSitter(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return "PetSitter - " + self.user.username
+
 
 class PetOwner(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     description_bio = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return "PetOwner - " + self.user.username
+
 class PetSpecies(models.Model):
     name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
     
 class Pet(models.Model):
     pet_owner = models.ForeignKey(PetOwner, on_delete=models.CASCADE)
-    species = models.ForeignKey(PetSpecies, on_delete=models.CASCADE)
+    species = models.OneToOneField(PetSpecies, on_delete=models.CASCADE)
     breed = models.CharField(max_length=50)
+    name = models.CharField(max_length=20)
     age = models.IntegerField()
     weight = models.IntegerField()
     info_special_treatment = models.TextField()
     favorite_activities = models.TextField()
     feeding_info = models.TextField()
     photo_URL = models.URLField()
+
+    def __str__(self):
+        return self.name + "/Owner - " + self.pet_owner.user.username
 
 class Service(models.Model):
     name = models.CharField(max_length=30)
@@ -98,5 +111,8 @@ class Visit(models.Model):
     date_range_of_visit = DateTimeRangeField()
     visit_notes = models.TextField()
     is_accepted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "Visit - " + self.pet_sitter.user.username + "/PET - " + self.pet.name
 
 
