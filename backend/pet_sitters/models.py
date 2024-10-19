@@ -37,14 +37,14 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractUser):
     username = models.CharField(max_length=40, unique=True, blank=False)
     email = models.EmailField(max_length=70,unique=True)
-    date_of_birth = models.DateField(null=True)
+    date_of_birth = models.DateField(null=False)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     phone_number = PhoneNumberField(blank=False, unique=True)
     address_city = models.CharField(max_length=40)
     address_street = models.CharField(max_length=40)
-    address_house = models.CharField(max_length=10, blank=True, null=True)
-    profile_picture_url = models.URLField(blank=True, null=True)
+    address_house = models.CharField(max_length=10, blank=True)
+    profile_picture_url = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
