@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
 from .serializers import *
@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.exceptions import NotFound
 from .models import PetSitter, PetOwner, PetSpecies, Service, Visit, User
-from .permissions import AuthorOnly, AuthorOnlyOrReadOnly, AdminOnlyOrReadOnly
+from .permissions import *
 
 class TokenAuthentication(authentication.TokenAuthentication):
     authentication.TokenAuthentication.keyword = 'Bearer'
@@ -52,7 +52,7 @@ class LoginView(APIView):
             }
             return Response(data=response, status=status.HTTP_200_OK)
         else:
-            return Response(data={"message":"Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(data={"message" : "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
         
 
     def get(self, request:Request):
@@ -263,6 +263,116 @@ class PetSpeciesGetView(generics.GenericAPIView,
     
     def patch(self, request:Request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+    
+
+class PetListCreateView(generics.GenericAPIView,
+                        mixins.ListModelMixin,
+                        mixins.CreateModelMixin):
+    
+    permission_classes = [IsAuthenticated]
+    queryset = Pet.objects.all()
+    serializer_class = PetSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(pet_owner=PetOwner.objects.get(user=self.request.user))
+        return super().perform_create(serializer)
+
+    def get(self, request:Request, *args, **kwargs):
+        return self.list(request,*args, **kwargs)
+    
+    def post(self, request:Request, *args, **kwargs):
+        if PetOwner.objects.filter(user=self.request.user).exists():
+            return self.create(request,*args, **kwargs)
+        
+        return Response(data={"error":"You're not a pet owner. Create pet owner profile first."}, status=status.HTTP_403_FORBIDDEN)
+    
+class PetGetDeletePatchView(generics.GenericAPIView,
+                       mixins.RetrieveModelMixin,
+                       mixins.DestroyModelMixin,
+                       mixins.UpdateModelMixin):
+    
+    permission_classes = [IsAuthenticated, PetAuthorOnlyOrReadOnly]
+    serializer_class = PetSerializer
+    queryset = Pet.objects.all()
+
+    def get(self, request:Request, *args, **kwargs):
+        return self.retrieve(request,*args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        
+        return Response({"message": "Pet successfully deleted."}, status=status.HTTP_200_OK)
+    
+    def delete(self, request:Request, *args, **kwargs):
+        return self.destroy(request,*args, **kwargs)
+    
+    def patch(self, request:Request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+class ServiceListView(generics.GenericAPIView,
+                              mixins.ListModelMixin,
+                              mixins.CreateModelMixin):
+    
+    permission_classes = [IsAuthenticated, AdminOnlyOrReadOnly]
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+
+    def get(self, request:Request, *args, **kwargs):
+        return self.list(request,*args, **kwargs)
+    
+    def post(self, request:Request, *args, **kwargs):
+        name_service = request.data.get('name')
+        name_service_copy = self.queryset.filter(name=name_service).exists()
+
+        if name_service_copy:
+            return Response(data={"error" : "This service already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return self.create(request,*args, **kwargs)
+
+class VisitListCreateView(generics.GenericAPIView,
+                        mixins.ListModelMixin,
+                        mixins.CreateModelMixin):
+    
+    permission_classes = [IsAuthenticated]
+    queryset = Visit.objects.all()
+    serializer_class = VisitCreateSeriallizer
+
+    def get(self, request:Request, *args, **kwargs):
+        return self.list(request,*args, **kwargs)
+    
+    def post(self, request:Request, *args, **kwargs):
+        if get_object_or_404(Pet, id=request.data['pet']).pet_owner.user == self.request.user:
+            return self.create(request,*args, **kwargs)
+        
+        return Response(data={"error":"You're not a pet owner of this pet."}, status=status.HTTP_403_FORBIDDEN)
+
+        
+    
+class VisitGetDeletePatchView(generics.GenericAPIView,
+                       mixins.RetrieveModelMixin,
+                       mixins.DestroyModelMixin,
+                       mixins.UpdateModelMixin):
+    
+    permission_classes = [IsAuthenticated, PetOwnerOnlyOrReadOnly]
+    queryset = Visit.objects.all()
+    serializer_class = VisitGetUpdateSeriallizer
+
+    def get(self, request:Request, *args, **kwargs):
+        return self.retrieve(request,*args, **kwargs)
+    
+    def destroy(self, request:Request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        
+        return Response({"message": "Visit successfully deleted."}, status=status.HTTP_200_OK)
+        
+    def delete(self, request:Request, *args, **kwargs):
+        return self.destroy(request,*args, **kwargs)
+    
+    def patch(self, request:Request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+        
     
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")

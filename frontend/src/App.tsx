@@ -1,9 +1,11 @@
 import "./App.css";
-import HomePage from "./pages/HomePage";
+import RoutesComponent from "./RoutesComponent.tsx";
 
 function App() {
   return (
-    <HomePage/>
+    <>
+      <RoutesComponent/>
+    </>
   );
 }
 

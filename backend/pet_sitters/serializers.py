@@ -1,12 +1,17 @@
+from django.utils.formats import date_format
+
 from .models import *
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
 from rest_framework.authtoken.models import Token
+from psycopg2.extras import DateTimeRange
+from drf_extra_fields.fields import DateTimeRangeField
 
 class SignUpSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=80)
     username = serializers.CharField(max_length=45)
     password = serializers.CharField(min_length=8,write_only=True)
+    date_of_birth = serializers.DateField(input_formats=['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y'])
 
     class Meta:
         model = User
@@ -73,14 +78,32 @@ class PetSpeciesSerializer(serializers.ModelSerializer):
         model = PetSpecies
         fields = ['id','name']
 
-class PetSerializer(serializers.ModelSerializer):
-    # user_data = UserSerializer(source='user', read_only=True)
-    user_data = UserSerializer(source='user', read_only=True)
+class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Pet
-        fields = ['id','description_bio','user_data']
+        model = Service
+        fields = ['id','name']
 
-class PetUpdateDeleteSerializer(serializers.ModelSerializer):
+class PetSerializer(serializers.ModelSerializer):
+    pet_owner_data = PetOwnerSerializer(source='pet_owner', read_only=True)
+    species_data = PetSpeciesSerializer(source='species', read_only=True)
     class Meta:
         model = Pet
-        fields = ['description_bio']
+        fields = ['id','species','breed','name', 'age', 'weight', 'info_special_treatment', 
+        'favorite_activities', 'feeding_info', 'photo_URL', 'pet_owner_data', 'species_data']
+
+class VisitCreateSeriallizer(serializers.ModelSerializer):
+    pet_data = PetSerializer(source='pet', read_only=True)
+    pet_sitter_data = PetSitterSerializer(source='pet_sitter', read_only=True)
+    date_range_of_visit = DateTimeRangeField()
+    class Meta:
+        model = Visit
+        fields = ['id', 'pet_sitter', 'pet', 'services', 'date_range_of_visit', 'pet_data', 'pet_sitter_data']
+        
+class VisitGetUpdateSeriallizer(serializers.ModelSerializer):
+    pet_data = PetSerializer(source='pet', read_only=True)
+    pet_sitter_data = PetSitterSerializer(source='pet_sitter', read_only=True)
+    date_range_of_visit = DateTimeRangeField()
+    class Meta:
+        model = Visit
+        fields = ['id', 'pet_sitter', 'pet', 'services', 'rating', 'review', 'date_range_of_visit',
+                  'visit_notes', 'is_accepted', 'is_over','pet_data', 'pet_sitter_data']

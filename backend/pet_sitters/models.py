@@ -51,7 +51,7 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username', 'date_of_birth', 'phone_number']
 
     def __str__(self):
         return self.username
@@ -86,15 +86,15 @@ class PetSpecies(models.Model):
     
 class Pet(models.Model):
     pet_owner = models.ForeignKey(PetOwner, on_delete=models.CASCADE)
-    species = models.OneToOneField(PetSpecies, on_delete=models.CASCADE)
-    breed = models.CharField(max_length=50)
+    species = models.ForeignKey(PetSpecies, on_delete=models.CASCADE)
+    breed = models.CharField(max_length=50, blank=True)
     name = models.CharField(max_length=20)
     age = models.IntegerField()
     weight = models.IntegerField()
-    info_special_treatment = models.TextField()
+    info_special_treatment = models.TextField(blank=True)
     favorite_activities = models.TextField()
     feeding_info = models.TextField()
-    photo_URL = models.URLField()
+    photo_URL = models.URLField(blank=True)
 
     def __str__(self):
         return self.name + "/Owner - " + self.pet_owner.user.username
@@ -106,11 +106,12 @@ class Visit(models.Model):
     pet_sitter = models.ForeignKey(PetSitter, on_delete=models.CASCADE)
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE)
     services = models.ManyToManyField(Service)
-    rating = models.IntegerField(default=1, validators=[MaxValueValidator(5), MinValueValidator(1)])
-    review = models.TextField()
+    rating = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)], null=True)
+    review = models.TextField(blank=True)
     date_range_of_visit = DateTimeRangeField()
-    visit_notes = models.TextField()
+    visit_notes = models.TextField(blank=True)
     is_accepted = models.BooleanField(default=False)
+    is_over = models.BooleanField(default=False)
 
     def __str__(self):
         return "Visit - " + self.pet_sitter.user.username + "/PET - " + self.pet.name
