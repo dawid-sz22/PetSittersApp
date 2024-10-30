@@ -6,6 +6,7 @@ import {
 import HomePage from "./pages/HomePage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import RegisterPage from "./pages/RegisterPage.tsx";
+import ResetPasswordRequest from "./pages/ResetPasswordRequest.tsx";
 
 function RoutesComponent() {
     return (
@@ -15,6 +16,7 @@ function RoutesComponent() {
                     <Route path={"/"} element={<HomePage/>}></Route>
                     <Route path={"/login/"} element={<LoginPage/>}></Route>
                     <Route path={"/register/"} element={<RegisterPage/>}></Route>
+                    <Route path={"/reset-password/"} element={<ResetPasswordRequest/>}></Route>
                 </Routes>
             </Router>
         </>

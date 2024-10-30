@@ -50,7 +50,20 @@ class UserAuthorizedSerializer (serializers.ModelSerializer):
         model = User
         fields = ['email','username', 'date_of_birth', 'first_name', 'last_name',
                   'phone_number', 'address_city', 'address_street', 'address_house', 'profile_picture_url', 'created_at', 'updated_at']
-        
+
+class PasswordResetRequestSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(read_only=True)
+    class Meta:
+        model = PasswordResetToken
+        fields = ['email']
+
+class PasswordResetSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(min_length=8,write_only=True)
+    confirm_password = serializers.CharField(min_length=8,write_only=True)
+    class Meta:
+        model = PasswordResetToken
+        fields = ['password', 'confirm_password']
+
 class PetSitterSerializer(serializers.ModelSerializer):
     user_data = UserSerializer(source='user', read_only=True)
     class Meta:

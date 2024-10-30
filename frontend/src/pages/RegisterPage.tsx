@@ -1,12 +1,12 @@
 import {useEffect, useState} from "react";
-import {handleRegister} from "../apiConfig.tsx";
+import {handleRegisterAPI} from "../apiConfig.tsx";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import {isValidPhoneNumber} from "react-phone-number-input";
 import * as React from "react";
+import {CircularProgress} from "@mui/material";
 
 function RegisterPage() {
-
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -20,21 +20,20 @@ function RegisterPage() {
     const [addressCity, setAddressCity] = useState('');
     const [addressStreet, setAddressStreet] = useState('');
     const [addressNumber, setAddressNumber] = useState('');
+    const [errorRegister, setErrorRegister] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() =>{ const handlePasswordChange = () => {
-
-        console.log(password.length);
-        console.log(password);
-        if (password && password.length < 8) {
-            setPasswordError('Minimalna wymagana ilość znaków: 8');
+    useEffect(() => {
+        const handlePasswordChange = () => {
+            if (password && password.length < 8) {
+                setPasswordError('Minimalna wymagana ilość znaków: 8');
+            } else if (repeatPassword && password !== repeatPassword) {
+                setPasswordError('Passwords do not match');
+            } else {
+                setPasswordError('');
+            }
         }
-        else if (repeatPassword && password !== repeatPassword) {
-            setPasswordError('Passwords do not match');
-        } else {
-            setPasswordError('');
-        }
-    }
-    handlePasswordChange();
+        handlePasswordChange();
     });
 
     const handlePhoneNumberValidation = (phone: string | undefined) => {
@@ -58,17 +57,17 @@ function RegisterPage() {
         if (password !== repeatPassword) {
             setPasswordError('Podane hasła nie są identyczne');
             return;
-        }
-        else if (password.length < 8) {
+        } else if (password.length < 8) {
             setPasswordError('Minimalna wymagana ilość znaków: 8');
-        }
-        else if (!isValidPhoneNumber((phoneNumber) ? phoneNumber : '')) {
+        } else if (!isValidPhoneNumber((phoneNumber) ? phoneNumber : '')) {
             setPhoneError('Podany numer telefonu jest niepoprawny');
             return;
         }
+
+        setLoading(true);
         try {
             if (phoneNumber != null) {
-                await handleRegister(
+                await handleRegisterAPI(
                     {
                         email: email,
                         dateOfBirth: dateOfBirth,
@@ -84,9 +83,15 @@ function RegisterPage() {
                 )
             }
         } catch (e) {
+            if (e instanceof Error) setErrorRegister(e.message);
             console.log(e);
+
             return;
         }
+        setLoading(false);
+        setErrorRegister('');
+
+        return;
     };
 
 
@@ -172,11 +177,21 @@ function RegisterPage() {
                         <span className="text-gray-700">Numer mieszkania:</span>
                         <input type="text" value={addressNumber} onChange={(e) => setAddressNumber(e.target.value)}
                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                               required/>
+                        />
                     </label>
+                    <div className="flex items-center justify-center">
+                        {loading && (
+                            <CircularProgress/>
+                        )}
+                    </div>
+                    {
+                        errorRegister &&
+                        <p className="bg-red-500 text-white text-m mb-4 p-2 rounded text-center">{errorRegister}</p>
+                    }
                     <input type="submit" value={"Zarejestruj"}
                            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                            disabled={passwordError !== ''}/>
+
                 </form>
             </div>
         </>

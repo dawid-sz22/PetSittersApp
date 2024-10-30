@@ -1,13 +1,15 @@
-from django.shortcuts import render, get_object_or_404
+from django.conf.global_settings import EMAIL_HOST_USER
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
 from .serializers import *
-from rest_framework import generics, status, permissions, mixins, authentication
+from rest_framework import generics, status, mixins, authentication
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotFound
 from .models import PetSitter, PetOwner, PetSpecies, Service, Visit, User
 from .permissions import *
@@ -33,7 +35,9 @@ class SignUpUser(generics.GenericAPIView):
                 "data" : serializer.data
             }
             return Response(data=response, status=status.HTTP_201_CREATED)
-        
+
+        if serializer.errors.get('phone_number'):
+            return Response(data={"errors": ["phone number already exists"]}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
@@ -63,6 +67,54 @@ class LoginView(APIView):
 
         return Response(data=content, status=status.HTTP_200_OK)
     
+class RequestPasswordResetEmail(generics.GenericAPIView):
+    permission_classes = []
+    serializer_class = PasswordResetRequestSerializer
+    queryset = PasswordResetToken.objects.all()
+
+    def post(self, request:Request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            email = self.request.data['email']
+            user = User.objects.filter(email=email).first()
+            print(user)
+            if user is not None:
+                token_gen = PasswordResetTokenGenerator()
+                token = token_gen.make_token(user)
+                reset = PasswordResetToken(user=user, token=token)
+                reset.save()
+                return Response(data={"message":"Email sent successfully"}, status=status.HTTP_200_OK)
+            else:
+                return Response(data={"message":"Email does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PasswordResetView(generics.GenericAPIView):
+    permission_classes = []
+    serializer_class = PasswordResetSerializer
+
+    def post(self, request:Request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            token = self.request.query_params.get('token')
+
+            if self.request.data['password'] == self.request.data['confirm_password']:
+                check_token_reset = PasswordResetToken.objects.filter(token=token).first()
+                if check_token_reset.token == token:
+                    user = check_token_reset.user
+                    user.set_password(self.request.data['password'])
+                    user.save()
+                    return Response(data={"message":"Password reset successfully"}, status=status.HTTP_200_OK)
+                else:
+                    return Response(data={"message":"Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(data={"message":"Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserDeletePatchGetView(generics.GenericAPIView,
                           mixins.DestroyModelMixin,
                           mixins.UpdateModelMixin,

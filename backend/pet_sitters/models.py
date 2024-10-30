@@ -56,6 +56,14 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username + "/Token"
+
 class PetSitter(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="pet_sitters")
     experience_in_months = models.IntegerField()
