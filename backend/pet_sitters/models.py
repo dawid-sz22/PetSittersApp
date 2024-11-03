@@ -74,7 +74,7 @@ class PetSitter(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "PetSitter - " + self.user.username
+        return "PetSitterDetails - " + self.user.username
 
 
 class PetOwner(models.Model):

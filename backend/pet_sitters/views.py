@@ -99,13 +99,18 @@ class PasswordResetView(generics.GenericAPIView):
 
         if serializer.is_valid():
             token = self.request.query_params.get('token')
+            if not token:
+                return Response(data={"message":"Token is missing"}, status=status.HTTP_400_BAD_REQUEST)
 
             if self.request.data['password'] == self.request.data['confirm_password']:
                 check_token_reset = PasswordResetToken.objects.filter(token=token).first()
-                if check_token_reset.token == token:
+                if check_token_reset:
                     user = check_token_reset.user
                     user.set_password(self.request.data['password'])
                     user.save()
+
+                    # Delete used token
+                    check_token_reset.delete()
                     return Response(data={"message":"Password reset successfully"}, status=status.HTTP_200_OK)
                 else:
                     return Response(data={"message":"Invalid token"}, status=status.HTTP_400_BAD_REQUEST)

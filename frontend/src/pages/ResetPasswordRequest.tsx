@@ -9,7 +9,7 @@ function ResetPasswordRequest() {
 
     const handleResetPasswordRequest = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);  // Set loading to true before API call
+        setLoading(true);  // Set loading to true before API ca ll
         setErrorEmail("");
         try {
             const respone = await handleRequestPasswordResetAPI(
@@ -34,7 +34,7 @@ function ResetPasswordRequest() {
         <>
             <div className="flex h-screen items-center justify-center">
                 <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-md shadow-md">
-                    <h2 className="text-2xl font-bold text-center">Reset Password</h2>
+                    <h2 className="text-2xl font-bold text-center">Zresetuj hasło</h2>
                     <form className="space-y-6" onSubmit={handleResetPasswordRequest}>
                         <div className="flex flex-col space-y-1">
                             <label htmlFor="email" className="text-sm font-medium leading-5">Email</label>
@@ -60,7 +60,7 @@ function ResetPasswordRequest() {
                         <div>
                             <input
                                 type="submit"
-                                value={"Reset Password"}
+                                value={"Zresetuj hasło"}
                                 className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
                             />
                         </div>

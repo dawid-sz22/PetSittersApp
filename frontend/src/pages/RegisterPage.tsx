@@ -28,7 +28,7 @@ function RegisterPage() {
             if (password && password.length < 8) {
                 setPasswordError('Minimalna wymagana ilość znaków: 8');
             } else if (repeatPassword && password !== repeatPassword) {
-                setPasswordError('Passwords do not match');
+                setPasswordError('Podane hasła nie są identyczne');
             } else {
                 setPasswordError('');
             }
@@ -59,6 +59,7 @@ function RegisterPage() {
             return;
         } else if (password.length < 8) {
             setPasswordError('Minimalna wymagana ilość znaków: 8');
+            return;
         } else if (!isValidPhoneNumber((phoneNumber) ? phoneNumber : '')) {
             setPhoneError('Podany numer telefonu jest niepoprawny');
             return;
@@ -98,7 +99,7 @@ function RegisterPage() {
 // Update form element to include `onSubmit` prop
     return (
         <>
-            <div className="flex justify-center items-center min-h-screen py-10 bg-blue-100">
+            <div className="flex justify-center items-center min-h-screen py-10 bg-[url('./assets/bg_register.jpg')] bg-cover">
                 <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
                     <h1 className="text-2xl font-semibold text-blue-500 mb-6">Rejestracja</h1>
                     <label className="block mb-4">

@@ -23,7 +23,7 @@ export interface UserData {
     profile_picture_url: string;
 }
 
-export interface PetSitterDetails {
+export interface PetSitterDetailsType {
     id: number;
     experience_in_months: number;
     daily_rate: number;

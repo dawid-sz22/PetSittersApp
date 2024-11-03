@@ -1,5 +1,5 @@
 import axios from "axios";
-import {PetSitterDetails, registerArguments} from "./types.tsx";
+import {PetSitterDetailsType, registerArguments} from "./types.tsx";
 
 
 const API_URL = "http://127.0.0.1:8000/api"
@@ -100,7 +100,22 @@ export const handleRequestPasswordResetAPI = async (email: string) => {
     }
 }
 
-export const getAllPetSittersAPI = async (): Promise<PetSitterDetails[] | null> => {
+export const handlePasswordResetAPI = async (password: string, repeatPassword: string, token: string) => {
+    try {
+        const response = await axios.post(`${API_URL}/reset_password/change/`, {
+            password: password,
+            confirm_password: repeatPassword
+        }, {
+            params: {token: token}
+        })
+        return response.data;
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+export const getAllPetSittersAPI = async (): Promise<PetSitterDetailsType[] | null> => {
     try {
         setAuthToken()
         const response = await axios.get(`${API_URL}/pet_sitter/`);
