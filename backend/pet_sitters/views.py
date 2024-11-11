@@ -118,7 +118,7 @@ class PasswordResetView(generics.GenericAPIView):
                 return Response(data={"message":"Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 
 class UserDeletePatchGetView(generics.GenericAPIView,
                           mixins.DestroyModelMixin,

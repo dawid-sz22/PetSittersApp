@@ -27,6 +27,8 @@ function LoginPage() {
         setErrorLogin("");
         setLoading(false);  // Set loading to false after successful API call
 
+        window.location.href = "/";
+
         return;
     };
 

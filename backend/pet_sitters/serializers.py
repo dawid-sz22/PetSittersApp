@@ -45,11 +45,7 @@ class UserSerializer (serializers.ModelSerializer):
         model = User
         fields = ['email','username', 'date_of_birth', 'first_name', 'last_name',
                   'phone_number', 'address_city', 'address_street', 'profile_picture_url']
-class UserAuthorizedSerializer (serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['email','username', 'date_of_birth', 'first_name', 'last_name',
-                  'phone_number', 'address_city', 'address_street', 'address_house', 'profile_picture_url', 'created_at', 'updated_at']
+
 
 class PasswordResetRequestSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(read_only=True)
@@ -104,6 +100,13 @@ class PetSerializer(serializers.ModelSerializer):
         fields = ['id','species','breed','name', 'age', 'weight', 'info_special_treatment', 
         'favorite_activities', 'feeding_info', 'photo_URL', 'pet_owner_data', 'species_data']
 
+class PetWithoutOwnerSerializer(serializers.ModelSerializer):
+    species_data = PetSpeciesSerializer(source='species', read_only=True)
+    class Meta:
+        model = Pet
+        fields = ['id','species','breed','name', 'age', 'weight', 'info_special_treatment', 
+        'favorite_activities', 'feeding_info', 'photo_URL', 'species_data']
+
 class VisitCreateSeriallizer(serializers.ModelSerializer):
     pet_data = PetSerializer(source='pet', read_only=True)
     pet_sitter_data = PetSitterSerializer(source='pet_sitter', read_only=True)
@@ -120,3 +123,20 @@ class VisitGetUpdateSeriallizer(serializers.ModelSerializer):
         model = Visit
         fields = ['id', 'pet_sitter', 'pet', 'services', 'rating', 'review', 'date_range_of_visit',
                   'visit_notes', 'is_accepted', 'is_over','pet_data', 'pet_sitter_data']
+
+class UserAuthorizedSerializer(serializers.ModelSerializer):
+    pets = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['email', 'username', 'date_of_birth', 'first_name', 'last_name',
+                 'phone_number', 'address_city', 'address_street', 'address_house', 
+                 'profile_picture_url', 'created_at', 'updated_at', 'pets']
+
+    def get_pets(self, obj):
+        try:
+            pet_owner = PetOwner.objects.get(user=obj)
+            pets = Pet.objects.filter(pet_owner=pet_owner)
+            return PetWithoutOwnerSerializer(pets, many=True).data
+        except PetOwner.DoesNotExist:
+            return []
