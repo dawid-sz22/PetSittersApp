@@ -1,7 +1,13 @@
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
-import { Pet, UserData, PetSitterDetailsType } from "../types";
-import { getUserDataAPI, handleUpdateUserAPI } from "../apiConfig";
+import { UserData } from "../types";
+import {
+  getUserDataAPI,
+  handleLoginAPI,
+  handleUpdateUserAPI,
+  deletePetSitterAPI,
+  deleteUserAPI,
+} from "../apiConfig";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "../components/ErrorFetching";
 import { toast, ToastContainer } from "react-toastify";
@@ -18,6 +24,10 @@ function ProfilePage() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showDeletePetSitterModal, setShowDeletePetSitterModal] =
+    useState(false);
+  const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
+    useState(false);
   // Form states
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -27,6 +37,9 @@ function ProfilePage() {
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState<string | undefined>(undefined);
   const [phoneError, setPhoneError] = useState("");
+  const [city, setCity] = useState("");
+  const [street, setStreet] = useState("");
+  const [houseNumber, setHouseNumber] = useState("");
 
   const handlePhoneNumberValidation = (phone: string | undefined) => {
     setPhoneNumber(phone);
@@ -95,7 +108,8 @@ function ProfilePage() {
     e.preventDefault();
 
     try {
-      await handleUpdateUserAPI({ password: password });
+      await handleLoginAPI(email, password);
+      await handleUpdateUserAPI({ password: newPassword });
       setShowPasswordModal(false);
       showToastSuccess("Hasło zostało zmienione!");
 
@@ -128,21 +142,70 @@ function ProfilePage() {
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await handleUpdateUserAPI({username: username });
+      console.log(phoneNumber);
+      await handleUpdateUserAPI({
+        username: username,
+        phone_number: phoneNumber,
+      });
       setShowProfileModal(false);
       showToastSuccess("Dane osobowe zostały zmienione!");
+      localStorage.setItem("usernamePetSitter", username);
+      window.location.reload();
 
-      // Reset form
       setUsername("");
+      setPhoneNumber(undefined);
     } catch (err) {
       toastErrorShow("Nie udało się zmienić danych osobowych :(");
       console.error("Error updating profile:", err);
     }
   };
 
-  const handleAddressSubmit = (e: React.FormEvent) => {
+  const handleAddressSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowAddressModal(false);
+    try {
+      await handleUpdateUserAPI({
+        address_city: city,
+        address_street: street,
+        address_house: houseNumber,
+      });
+      setShowAddressModal(false);
+      showToastSuccess("Adres został zmieniony!");
+      window.location.reload();
+
+      setCity("");
+      setStreet("");
+      setHouseNumber("");
+    } catch (err) {
+      toastErrorShow("Nie udało się zmienić adresu :(");
+      console.error("Error updating address:", err);
+    }
+  };
+
+  const handleDeletePetSitter = async () => {
+    try {
+      await deletePetSitterAPI();
+      showToastSuccess("Profil opiekuna został usunięty!");
+      window.location.reload();
+    } catch (err) {
+      toastErrorShow("Nie udało się usunąć profilu opiekuna :(");
+      console.error("Error deleting pet sitter profile:", err);
+    }
+  };
+
+  const handleCreatePetSitter = () => {
+    window.location.href = "/create-pet-sitter";
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      await deleteUserAPI();
+      showToastSuccess("Konto zostało usunięte!");
+      localStorage.clear();
+      window.location.href = "/";
+    } catch (err) {
+      toastErrorShow("Nie udało się usunąć konta");
+      console.error("Error deleting user:", err);
+    }
   };
 
   if (errorFetching) {
@@ -258,17 +321,24 @@ function ProfilePage() {
                     >
                       Edytuj dane osobowe
                     </button>
+
+                    <button
+                      className="w-full bg-red-600 text-white rounded-lg px-4 py-2 hover:bg-red-700"
+                      onClick={() => setShowDeleteUserModal(true)}
+                    >
+                      Usuń konto
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="w-1/2">
-              {userData?.pet_sitter_details && (
-                <div className="rounded-2xl shadow-lg border p-6 bg-blue-100 mb-6">
-                  <h2 className="text-3xl font-bold text-blue-900 mb-4">
-                    Dane opiekuna
-                  </h2>
+              <div className="rounded-2xl shadow-lg border p-6 bg-blue-100 mb-6">
+                <h2 className="text-3xl font-bold text-blue-900 mb-4">
+                  Dane opiekuna
+                </h2>
+                {userData?.pet_sitter_details ? (
                   <div className="bg-white rounded-lg p-4 border-2 border-black">
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
@@ -278,7 +348,9 @@ function ProfilePage() {
                         </p>
                       </div>
                       <div>
-                        <p className="text-gray-600 text-lg">Stawka godzinowa</p>
+                        <p className="text-gray-600 text-lg">
+                          Stawka godzinowa
+                        </p>
                         <p className="font-semibold text-lg">
                           {userData.pet_sitter_details?.hourly_rate} zł
                         </p>
@@ -298,9 +370,22 @@ function ProfilePage() {
                         {userData.pet_sitter_details?.description_bio}
                       </p>
                     </div>
+                    <button
+                      className="w-full bg-red-600 text-white rounded-lg px-4 py-2 mt-4 hover:bg-red-700"
+                      onClick={() => setShowDeletePetSitterModal(true)}
+                    >
+                      Usuń profil opiekuna
+                    </button>
                   </div>
-                </div>
-              )}
+                ) : (
+                  <button
+                    className="w-full bg-green-600 text-white font-semibold rounded-lg px-4 py-2 mt-4 hover:bg-green-700"
+                    onClick={handleCreatePetSitter}
+                  >
+                    Zostań opiekunem
+                  </button>
+                )}
+              </div>
 
               <div className="rounded-2xl shadow-lg border p-6 bg-blue-100 sticky top-4">
                 <div className="flex justify-between items-center mb-6">
@@ -502,6 +587,8 @@ function ProfilePage() {
                     <input
                       id="new-email"
                       type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                       className="w-full p-2 border rounded"
                     />
@@ -516,6 +603,8 @@ function ProfilePage() {
                     <input
                       id="confirm-email"
                       type="email"
+                      value={emailConfirm}
+                      onChange={(e) => setEmailConfirm(e.target.value)}
                       required
                       className="w-full p-2 border rounded"
                     />
@@ -593,6 +682,8 @@ function ProfilePage() {
                     <input
                       id="username"
                       type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       required
                       className="w-full p-2 border rounded"
                     />
@@ -632,6 +723,8 @@ function ProfilePage() {
                     <input
                       id="city"
                       type="text"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
                       required
                       className="w-full p-2 border rounded"
                     />
@@ -646,6 +739,8 @@ function ProfilePage() {
                     <input
                       id="street"
                       type="text"
+                      value={street}
+                      onChange={(e) => setStreet(e.target.value)}
                       required
                       className="w-full p-2 border rounded"
                     />
@@ -660,6 +755,8 @@ function ProfilePage() {
                     <input
                       id="house-number"
                       type="text"
+                      value={houseNumber}
+                      onChange={(e) => setHouseNumber(e.target.value)}
                       required
                       className="w-full p-2 border rounded"
                     />
@@ -680,6 +777,60 @@ function ProfilePage() {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {showDeletePetSitterModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="bg-white p-6 rounded-lg w-96">
+                <h2 className="text-2xl font-bold mb-4">
+                  Usuń profil opiekuna
+                </h2>
+                <p className="mb-4">
+                  Czy na pewno chcesz usunąć swój profil opiekuna? Ta operacja
+                  jest nieodwracalna.
+                </p>
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => setShowDeletePetSitterModal(false)}
+                    className="px-4 py-2 bg-gray-200 rounded"
+                  >
+                    Anuluj
+                  </button>
+                  <button
+                    onClick={handleDeletePetSitter}
+                    className="px-4 py-2 bg-red-600 text-white rounded"
+                  >
+                    Usuń profil
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showDeleteUserModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="bg-white p-6 rounded-lg w-96">
+                <h2 className="text-2xl font-bold mb-4">Usuń konto</h2>
+                <p className="mb-4">
+                  Czy na pewno chcesz usunąć swoje konto? Ta operacja jest
+                  nieodwracalna i spowoduje utratę wszystkich danych.
+                </p>
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => setShowDeleteUserModal(false)}
+                    className="px-4 py-2 bg-gray-200 rounded"
+                  >
+                    Anuluj
+                  </button>
+                  <button
+                    onClick={handleDeleteUser}
+                    className="px-4 py-2 bg-red-600 text-white rounded"
+                  >
+                    Usuń konto
+                  </button>
+                </div>
               </div>
             </div>
           )}

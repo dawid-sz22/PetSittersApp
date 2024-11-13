@@ -154,6 +154,17 @@ export const handleUpdateUserAPI = async (data: {
   }
 };
 
+export const deleteUserAPI = async () => {
+  try {
+    setAuthToken();
+    const response = await axios.delete(`${API_URL}/user/`);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
 export const getUserDataAPI = async (): Promise<UserData | null> => {
   try {
     setAuthToken();
@@ -217,6 +228,17 @@ export const createPetSitterAPI = async (data: CreatePetSitterData) => {
         throw new Error(`Profil opiekuna już istnieje!`);
       }
     }
+    console.log(e);
+    throw e;
+  }
+};
+
+export const deletePetSitterAPI = async () => {
+  try {
+    setAuthToken();
+    const response = await axios.delete(`${API_URL}/pet_sitter/`);
+    return response.data;
+  } catch (e) {
     console.log(e);
     throw e;
   }
