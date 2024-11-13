@@ -65,6 +65,10 @@ class PetSitterSerializer(serializers.ModelSerializer):
     class Meta:
         model = PetSitter
         fields = ['id', 'experience_in_months', 'daily_rate', 'hourly_rate', 'description_bio','user_data']
+class PetSitterWithoutUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PetSitter
+        fields = ['id', 'experience_in_months', 'daily_rate', 'hourly_rate', 'description_bio']
 
 class PetSitterUpdateDeleteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -126,12 +130,12 @@ class VisitGetUpdateSeriallizer(serializers.ModelSerializer):
 
 class UserAuthorizedSerializer(serializers.ModelSerializer):
     pets = serializers.SerializerMethodField()
-
+    pet_sitter_details = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = ['email', 'username', 'date_of_birth', 'first_name', 'last_name',
                  'phone_number', 'address_city', 'address_street', 'address_house', 
-                 'profile_picture_url', 'created_at', 'updated_at', 'pets']
+                 'profile_picture_url', 'created_at', 'updated_at', 'pets', 'pet_sitter_details']
 
     def get_pets(self, obj):
         try:
@@ -140,3 +144,9 @@ class UserAuthorizedSerializer(serializers.ModelSerializer):
             return PetWithoutOwnerSerializer(pets, many=True).data
         except PetOwner.DoesNotExist:
             return []
+        
+    def get_pet_sitter_details(self, obj):
+        try:
+            return PetSitterWithoutUserSerializer(PetSitter.objects.get(user=obj)).data
+        except PetSitter.DoesNotExist:
+            return None

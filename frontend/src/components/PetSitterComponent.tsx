@@ -47,7 +47,7 @@ function PetSitterComponent({
             </strong>
           </p>
         </div>
-        <Link to={`/pet-sitter/`}>
+        <Link to={`/pet-sitter/${id}`}>
           <button className="flex justify-center items-center mx-auto rounded-lg text-center bg-white border-2 border-black px-3 pb-1 py-1 my-3 font-bold hover:bg-black hover:text-white">
             Pokaż profil
           </button>

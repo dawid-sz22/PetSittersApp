@@ -13,6 +13,8 @@ import { PetSitterComponent } from "./components/PetSitterComponent.tsx";
 import { PetSittersListPage } from "./pages/PetSittersListPage.tsx";
 import { NotFoundPage } from "./pages/NotFoundPage.tsx";
 import { ProfilePage } from "./pages/ProfilePage.tsx";
+import CreatePetSitterPage from "./pages/CreatePetSitterPage.tsx";
+import PetSitterDetails from "./components/PetSitterDetails.tsx";
 
 function RoutesComponent() {
   const isLoggedIn = () => {
@@ -25,13 +27,23 @@ function RoutesComponent() {
         <Routes>
           <Route
             path={"/"}
-            element={isLoggedIn() ? <HomePage /> : <Navigate to={"/login"} />}
+            element={<HomePage />}
           />
           <Route
             path={"/pet-sitters/"}
             element={
               isLoggedIn() ? (
                 <PetSittersListPage />
+              ) : (
+                <Navigate to={"/login"} />
+              )
+            }
+          ></Route>
+          <Route
+            path={"/pet-sitter/:id"}
+            element={
+              isLoggedIn() ? (
+                <PetSitterDetails />
               ) : (
                 <Navigate to={"/login"} />
               )
@@ -49,6 +61,7 @@ function RoutesComponent() {
           ></Route>
           <Route path={"/login/"} element={<LoginPage />}></Route>
           <Route path={"/register/"} element={<RegisterPage />}></Route>
+          <Route path={"/create-pet-sitter/"} element={<CreatePetSitterPage />}></Route>
           <Route
             path={"/reset-password/"}
             element={<ResetPasswordRequest />}

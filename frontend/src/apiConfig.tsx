@@ -1,5 +1,10 @@
 import axios from "axios";
-import { PetSitterDetailsType, registerArguments, UserData } from "./types.tsx";
+import {
+  CreatePetSitterData,
+  PetSitterDetailsType,
+  registerArguments,
+  UserData,
+} from "./types.tsx";
 
 const API_URL = "http://127.0.0.1:8000/api";
 
@@ -20,11 +25,21 @@ export const handleLoginAPI = async (email: string, password: string) => {
     });
     const token = response.data.token;
     localStorage.setItem("tokenPetSitter", token);
-    // window.location.href = "/";
+    localStorage.setItem("usernamePetSitter", response.data.username);
+    window.location.href = "/";
   } catch (e) {
     console.log(e);
     throw e;
   }
+};
+
+export const isLoggedIn = () => {
+  return !!localStorage.getItem("tokenPetSitter");
+};
+export const logout = () => {
+  localStorage.removeItem("tokenPetSitter");
+  localStorage.removeItem("usernamePetSitter");
+  window.location.href = "/";
 };
 
 /**
@@ -84,8 +99,6 @@ export const handleRegisterAPI = async ({
     throw e;
   }
 };
-
-export const handleLogout = async () => {};
 
 export const handleRequestPasswordResetAPI = async (email: string) => {
   try {
@@ -148,10 +161,22 @@ export const getUserDataAPI = async (): Promise<UserData | null> => {
     return response.data;
   } catch (e) {
     console.log(e);
-    return null;
+    throw e;
   }
 };
 
+export const updateUserDataAPI = async (
+  data: UserData
+): Promise<UserData | null> => {
+  try {
+    setAuthToken();
+    const response = await axios.patch(`${API_URL}/user/`, data);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
 
 export const getAllPetSittersAPI = async (): Promise<
   PetSitterDetailsType[] | null
@@ -162,6 +187,37 @@ export const getAllPetSittersAPI = async (): Promise<
     return response.data;
   } catch (e) {
     console.log(e);
-    return null;
+    throw e;
+  }
+};
+
+export const getPetSitterDetailsAPI = async (
+  id: string
+): Promise<PetSitterDetailsType | null> => {
+  try {
+    setAuthToken();
+    const response = await axios.get(`${API_URL}/pet_sitter/${id}/`);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const createPetSitterAPI = async (data: CreatePetSitterData) => {
+  try {
+    setAuthToken();
+    const response = await axios.post(`${API_URL}/pet_sitter/`, data);
+    return response.data;
+  } catch (e) {
+    if (axios.isAxiosError(e) && e.response && e.response.data.error) {
+      let errorMessage = e.response.data.error;
+      errorMessage = errorMessage.toLowerCase();
+      if (errorMessage.includes("already exists")) {
+        throw new Error(`Profil opiekuna już istnieje!`);
+      }
+    }
+    console.log(e);
+    throw e;
   }
 };

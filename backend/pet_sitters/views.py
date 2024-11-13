@@ -52,7 +52,8 @@ class LoginView(APIView):
         if user is not None:
             response = {
                 "message":"Success",
-                "token":user.auth_token.key
+                "token":user.auth_token.key,
+                "username": user.username
             }
             return Response(data=response, status=status.HTTP_200_OK)
         else:
@@ -144,7 +145,7 @@ class UserDeletePatchGetView(generics.GenericAPIView,
         return self.destroy(request,*args, **kwargs)
     
     def patch(self, request:Request, *args, **kwargs):
-        return self.pa(request, *args, **kwargs)
+        return self.partial_update(request, *args, **kwargs)
     
     def get(self, request:Request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
