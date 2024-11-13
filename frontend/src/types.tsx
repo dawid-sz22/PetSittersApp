@@ -11,9 +11,13 @@ export type registerArguments = {
   address_number: string;
 };
 
+export type PetSpecies = {
+  id: number;
+  name: string;
+};
+
 export interface Pet {
   id: number;
-  species: string;
   breed: string;
   name: string;
   age: number;
@@ -22,6 +26,7 @@ export interface Pet {
   favorite_activities: string;
   feeding_info: string;
   photo_URL: string;
+  species_data: PetSpecies; 
 }
 
 export interface UserData {
@@ -70,3 +75,8 @@ export interface CreatePetSitterData {
   hourly_rate: number;
   description_bio: string;
 }
+
+export type BaseModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};

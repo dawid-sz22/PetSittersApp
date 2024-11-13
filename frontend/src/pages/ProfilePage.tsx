@@ -1,12 +1,14 @@
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
-import { UserData } from "../types";
+import { PetSpecies, UserData } from "../types";
 import {
   getUserDataAPI,
   handleLoginAPI,
   handleUpdateUserAPI,
   deletePetSitterAPI,
   deleteUserAPI,
+  handleAddPetAPI,
+  getAllPetSpeciesAPI,
 } from "../apiConfig";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "../components/ErrorFetching";
@@ -27,7 +29,8 @@ function ProfilePage() {
   const [showDeletePetSitterModal, setShowDeletePetSitterModal] =
     useState(false);
   const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
-    useState(false);
+  const [showAddPetModal, setShowAddPetModal] = useState(false);
+  useState(false);
   // Form states
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -40,6 +43,16 @@ function ProfilePage() {
   const [city, setCity] = useState("");
   const [street, setStreet] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
+  const [petName, setPetName] = useState("");
+  const [petSpecies, setPetSpecies] = useState("");
+  const [petBreed, setPetBreed] = useState("");
+  const [petAge, setPetAge] = useState("");
+  const [petWeight, setPetWeight] = useState("");
+  const [petSpecialTreatment, setPetSpecialTreatment] = useState("");
+  const [petActivities, setPetActivities] = useState("");
+  const [petFeeding, setPetFeeding] = useState("");
+  const [petPhotoURL, setPetPhotoURL] = useState("");
+  const [petSpeciesList, setPetSpeciesList] = useState<PetSpecies[]>([]);
 
   const handlePhoneNumberValidation = (phone: string | undefined) => {
     setPhoneNumber(phone);
@@ -78,10 +91,20 @@ function ProfilePage() {
     }
   }, [newPassword, newPasswordConfirm]);
 
+  useEffect(() => {
+    const fetchPetSpecies = async () => {
+      const species = await getAllPetSpeciesAPI();
+      if (species) {
+        setPetSpeciesList(species);
+      }
+    };
+    fetchPetSpecies();
+  }, []);
+
   const toastErrorShow = (message: string) => {
     toast.error(message, {
       position: "top-center",
-      autoClose: 3000,
+      autoClose: 2000,
       hideProgressBar: false,
       style: {
         fontSize: "1.2rem",
@@ -91,16 +114,17 @@ function ProfilePage() {
     });
   };
 
-  const showToastSuccess = (message: string) => {
+  const showToastSuccess = (message: string, onClose?: () => void) => {
     toast.success(message, {
       position: "top-center",
-      autoClose: 3000,
+      autoClose: 2000,
       hideProgressBar: false,
       style: {
         fontSize: "1.2rem",
         fontWeight: "bold",
         width: "100%",
       },
+      onClose: onClose,
     });
   };
 
@@ -184,8 +208,9 @@ function ProfilePage() {
   const handleDeletePetSitter = async () => {
     try {
       await deletePetSitterAPI();
-      showToastSuccess("Profil opiekuna został usunięty!");
-      window.location.reload();
+      showToastSuccess("Profil opiekuna został usunięty!", () => {
+        window.location.reload();
+      });
     } catch (err) {
       toastErrorShow("Nie udało się usunąć profilu opiekuna :(");
       console.error("Error deleting pet sitter profile:", err);
@@ -205,6 +230,40 @@ function ProfilePage() {
     } catch (err) {
       toastErrorShow("Nie udało się usunąć konta");
       console.error("Error deleting user:", err);
+    }
+  };
+
+  const handleAddPet = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await handleAddPetAPI({
+        name: petName,
+        species: petSpecies,
+        breed: petBreed || undefined,
+        age: Number(petAge),
+        weight: Number(petWeight),
+        info_special_treatment: petSpecialTreatment || undefined,
+        favorite_activities: petActivities || undefined,
+        feeding_info: petFeeding || undefined,
+        photo_URL: petPhotoURL || undefined,
+      });
+      setShowAddPetModal(false);
+      showToastSuccess("Zwierzę zostało dodane!");
+      window.location.reload();
+
+      // Reset form
+      setPetName("");
+      setPetSpecies("");
+      setPetBreed("");
+      setPetAge("");
+      setPetWeight("");
+      setPetSpecialTreatment("");
+      setPetActivities("");
+      setPetFeeding("");
+      setPetPhotoURL("");
+    } catch (err) {
+      toastErrorShow("Nie udało się dodać zwierzęcia :(");
+      console.error("Error adding pet:", err);
     }
   };
 
@@ -394,9 +453,7 @@ function ProfilePage() {
                   </h2>
                   <button
                     className="bg-blue-700 text-white rounded-lg px-6 py-3 hover:bg-blue-800 font-semibold text-lg shadow-md"
-                    onClick={() => {
-                      /* Add pet modal logic */
-                    }}
+                    onClick={() => setShowAddPetModal(true)}
                   >
                     Dodaj zwierzę
                   </button>
@@ -424,8 +481,8 @@ function ProfilePage() {
                             <h3 className="text-xl font-bold text-blue-900">
                               {pet.name}
                             </h3>
-                            <span className="text-sm font-semibold text-blue-700 bg-blue-50 px-2 py-1 rounded-full">
-                              {pet.species}
+                            <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                              {pet.species_data.name}
                             </span>
                           </div>
                           <div className="text-l space-y-1">
@@ -454,8 +511,8 @@ function ProfilePage() {
                               </span>
                             </p>
                             {pet.info_special_treatment && (
-                              <div className="mt-2 bg-yellow-50 p-2 rounded-lg text-xs">
-                                <p className="font-semibold text-gray-700">
+                              <div className="mt-2 bg-yellow-50 p-2 rounded-lg">
+                                <p className="font-semibold text-gray-700 mb-1 text-m">
                                   Specjalne wymagania:
                                 </p>
                                 <p className="text-gray-900">
@@ -831,6 +888,157 @@ function ProfilePage() {
                     Usuń konto
                   </button>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {showAddPetModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg w-[500px] max-h-[90vh] overflow-y-auto">
+                <h2 className="text-2xl font-bold mb-4">Dodaj zwierzę</h2>
+                <form onSubmit={handleAddPet} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      *Imię
+                    </label>
+                    <input
+                      type="text"
+                      value={petName}
+                      onChange={(e) => setPetName(e.target.value)}
+                      required
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      *Gatunek
+                    </label>
+                    <select
+                      value={petSpecies}
+                      onChange={(e) => setPetSpecies(e.target.value)}
+                      required
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="">Wybierz gatunek</option>
+                      {petSpeciesList &&
+                        petSpeciesList.map((species) => (
+                          <option value={species.id}>{species.name}</option>
+                        ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Rasa
+                    </label>
+                    <input
+                      type="text"
+                      value={petBreed}
+                      onChange={(e) => setPetBreed(e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      *Wiek (w latach)
+                    </label>
+                    <input
+                      type="number"
+                      value={petAge}
+                      onChange={(e) => setPetAge(e.target.value)}
+                      required
+                      min="0"
+                      step="0.1"
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      *Waga (w kg)
+                    </label>
+                    <input
+                      type="number"
+                      value={petWeight}
+                      onChange={(e) => setPetWeight(e.target.value)}
+                      required
+                      min="0"
+                      step="0.1"
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Specjalne wymagania
+                    </label>
+                    <textarea
+                      value={petSpecialTreatment}
+                      onChange={(e) => setPetSpecialTreatment(e.target.value)}
+                      className="w-full p-2 border rounded"
+                      rows={3}
+                      placeholder="Np. przyjmowane leki, alergie, szczególne potrzeby"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Ulubione aktywności
+                    </label>
+                    <textarea
+                      value={petActivities}
+                      onChange={(e) => setPetActivities(e.target.value)}
+                      className="w-full p-2 border rounded"
+                      rows={3}
+                      placeholder="Np. zabawa piłką, drapanie za uchem, spacery"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      *Informacje o karmieniu
+                    </label>
+                    <textarea
+                      value={petFeeding}
+                      onChange={(e) => setPetFeeding(e.target.value)}
+                      className="w-full p-2 border rounded"
+                      required
+                      rows={3}
+                      placeholder="Np. rodzaj karmy, częstotliwość karmienia, pory posiłków"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      URL zdjęcia
+                    </label>
+                    <input
+                      type="url"
+                      value={petPhotoURL}
+                      onChange={(e) => setPetPhotoURL(e.target.value)}
+                      className="w-full p-2 border rounded"
+                      placeholder="https://example.com/pet-photo.jpg"
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddPetModal(false)}
+                      className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                    >
+                      Anuluj
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+                    >
+                      Dodaj zwierzę
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           )}

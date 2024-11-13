@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   CreatePetSitterData,
   PetSitterDetailsType,
+  PetSpecies,
   registerArguments,
   UserData,
 } from "./types.tsx";
@@ -237,6 +238,42 @@ export const deletePetSitterAPI = async () => {
   try {
     setAuthToken();
     const response = await axios.delete(`${API_URL}/pet_sitter/`);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const handleAddPetAPI = async (data: {
+  name: string;
+  species: string;
+  breed?: string;
+  age: number;
+  weight: number;
+  info_special_treatment?: string;
+  favorite_activities?: string;
+  feeding_info?: string;
+  photo_URL?: string;
+}) => {
+  try {
+    setAuthToken();
+    const response = await axios.post(`${API_URL}/pet/`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const getAllPetSpeciesAPI = async (): Promise<PetSpecies[] | null> => {
+  try {
+    setAuthToken();
+    const response = await axios.get(`${API_URL}/pet_species/`);
     return response.data;
   } catch (e) {
     console.log(e);

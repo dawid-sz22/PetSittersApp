@@ -15,12 +15,31 @@ function CreatePetSitterPage() {
     e.preventDefault();
     try {
       const response = await createPetSitterAPI(data);
-      toast.success("Profil opiekuna został utworzony!");
+      toast.success("Profil opiekuna został utworzony!", {
+        onClose: () => {
+          window.location.href = "/profile";
+        },
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        style: {
+          fontSize: "1.2rem",
+          fontWeight: "bold",
+          width: "100%",
+        },
+      });
     } catch (e) {
       if (e instanceof Error) {
         console.log(e.message);
         toast.error(e.message, {
           position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          style: {
+            fontSize: "1.2rem",
+            fontWeight: "bold",
+            width: "100%",
+          },
         });
       }
     }
@@ -38,7 +57,7 @@ function CreatePetSitterPage() {
             </h2>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Zdjęcie profilowe
                 </label>
@@ -50,7 +69,7 @@ function CreatePetSitterPage() {
                   }
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
-              </div>
+              </div> */}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
