@@ -1,7 +1,6 @@
 import { getAllPetSittersAPI, isLoggedIn } from "../apiConfig.tsx";
 import { getUserDataAPI } from "../apiConfig.tsx";
 import Navbar from "../components/Navbar.tsx";
-import { PetSittersDetailsPage } from "./PetSittersListPage.tsx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -52,8 +51,8 @@ function HomePage() {
     <>
       <Navbar />
       <ToastContainer />
-      <div className="min-h-screen bg-[url('./home_bg.jpeg')] bg-cover">
-        <div className="container mx-8 py-80 justify-center">
+      <div className="min-h-screen ">
+        <div className="container mx-auto py-80 justify-center">
           <h1 className="text-4xl font-bold text-center mb-12">
             Witaj w Pet Sitters!
           </h1>

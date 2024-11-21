@@ -1,10 +1,12 @@
 import axios from "axios";
 import {
   CreatePetSitterData,
+  PetOwnerData,
   PetSitterDetailsType,
   PetSpecies,
   registerArguments,
   UserData,
+  Visit,
 } from "./types.tsx";
 
 const API_URL = "http://127.0.0.1:8000/api";
@@ -27,6 +29,7 @@ export const handleLoginAPI = async (email: string, password: string) => {
     const token = response.data.token;
     localStorage.setItem("tokenPetSitter", token);
     localStorage.setItem("usernamePetSitter", response.data.username);
+    localStorage.setItem("userIDPetSitter", response.data.user_id);
     window.location.href = "/";
   } catch (e) {
     console.log(e);
@@ -177,6 +180,28 @@ export const getUserDataAPI = async (): Promise<UserData | null> => {
   }
 };
 
+export const getUserPetSitterAPI = async (): Promise<PetSitterDetailsType | null> => {
+  try {
+    setAuthToken();
+    const response = await axios.get(`${API_URL}/user/pet_sitter/`);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const getUserPetOwnerAPI = async (): Promise<PetOwnerData | null> => {
+  try {
+    setAuthToken();
+    const response = await axios.get(`${API_URL}/user/pet_owner/`);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
 export const updateUserDataAPI = async (
   data: UserData
 ): Promise<UserData | null> => {
@@ -280,3 +305,56 @@ export const getAllPetSpeciesAPI = async (): Promise<PetSpecies[] | null> => {
     throw e;
   }
 };
+
+export const getVisitsAPI = async (id: string): Promise<Visit[] | null> => {
+  try {
+    setAuthToken();
+    const response = await axios.get(`${API_URL}/pet_sitter/${id}/visits/`);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const getPetOwnerAPI = async (
+  id: string,
+): Promise<PetOwnerData | null> => {
+  try {
+    setAuthToken();
+    const response = await axios.get(`${API_URL}/pet_owner/${id}/`, {
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const getSecretUploadUrlAPI = async () => {
+  try {
+    setAuthToken();
+    const response = await axios.get(`${API_URL}/upload_url/`);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const uploadFileToS3API = async (uploadUrl: string, file: File) => {
+  try {
+    console.log(uploadUrl.upload_url);
+    const response = await axios.put(uploadUrl.upload_url, file, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Authorization": null
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+

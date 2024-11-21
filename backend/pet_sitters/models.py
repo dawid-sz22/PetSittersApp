@@ -65,7 +65,7 @@ class PasswordResetToken(models.Model):
         return self.user.username + "/Token"
 
 class PetSitter(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="pet_sitters")
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     experience_in_months = models.IntegerField()
     daily_rate = models.IntegerField()
     hourly_rate = models.IntegerField()
@@ -117,6 +117,7 @@ class Visit(models.Model):
     services = models.ManyToManyField(Service)
     rating = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)], null=True)
     review = models.TextField(blank=True)
+    price = models.IntegerField()
     date_range_of_visit = DateTimeRangeField()
     visit_notes = models.TextField(blank=True)
     is_accepted = models.BooleanField(default=False)

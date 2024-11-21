@@ -11,6 +11,8 @@ urlpatterns =[
     path("pet_sitter/", views.PetSitterListCreatePatchDeleteView.as_view(), name="PetSitterListCreatePatchDeleteView"),
     path("pet_sitter/<int:pk>/", views.PetSitterGetView.as_view(), name="PetSitterGetView"),
     path("user/", views.UserDeletePatchGetView.as_view(), name="UserDeletePatchGetView"),
+    path("user/pet_owner/", views.UserPetOwnerGetView.as_view(), name="UserPetOwnerGetView"),
+    path("user/pet_sitter/", views.UserPetSitterGetView.as_view(), name="UserPetSitterGetView"),
     path("pet_owner/", views.PetOwnerListCreatePatchDeleteView.as_view(), name="PetOwnerListCreatePatchDeleteView"),
     path("pet_owner/<int:pk>/", views.PetOwnerGetView.as_view(), name="PetOwnerGetView"),
     path("pet_species/", views.PetSpeciesListCreatePatchDeleteView.as_view(), name="PetSpeciesListCreatePatchDeleteView"),
@@ -19,4 +21,5 @@ urlpatterns =[
     path("pet/<int:pk>/", views.PetGetDeletePatchView.as_view(), name="PetGetDeletePatchView"),
     path("visit/", views.VisitListCreateView.as_view(), name="VisitListCreateView"),
     path("visit/<int:pk>/", views.VisitGetDeletePatchView.as_view(), name="VisitGetDeletePatchView"),
+    path("upload_url/", views.GetSecretUploadUrl.as_view(), name="GetSecretUploadUrl"),
 ]

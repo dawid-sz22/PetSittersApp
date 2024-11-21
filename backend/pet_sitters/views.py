@@ -14,6 +14,17 @@ from rest_framework.exceptions import NotFound
 from .models import PetSitter, PetOwner, PetSpecies, Service, Visit, User
 from .permissions import *
 
+import boto3
+from botocore.config import Config
+import os
+import uuid
+import datetime
+
+my_config = Config(
+    region_name='us-east-2',
+    signature_version='v4',
+)
+
 class TokenAuthentication(authentication.TokenAuthentication):
     authentication.TokenAuthentication.keyword = 'Bearer'
 
@@ -53,7 +64,8 @@ class LoginView(APIView):
             response = {
                 "message":"Success",
                 "token":user.auth_token.key,
-                "username": user.username
+                "username": user.username,
+                "user_id": user.id
             }
             return Response(data=response, status=status.HTTP_200_OK)
         else:
@@ -210,6 +222,28 @@ class PetSitterGetView(generics.GenericAPIView,
     serializer_class = PetSitterSerializer
     queryset = PetSitter.objects.all()
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+    
+    def get(self, request:Request, *args, **kwargs):
+        return self.retrieve(request,*args, **kwargs)
+    
+
+class UserPetSitterGetView(generics.GenericAPIView,
+                       mixins.RetrieveModelMixin):
+    
+    permission_classes = [IsAuthenticated]
+    serializer_class = PetSitterSerializer
+    queryset = PetSitter.objects.all()
+
+    def get_object(self):
+        try:
+            return PetSitter.objects.get(user=self.request.user)
+        except PetSitter.DoesNotExist:
+            raise NotFound(detail="Pet sitter profile not found.")
+
     def get(self, request:Request, *args, **kwargs):
         return self.retrieve(request,*args, **kwargs)
     
@@ -265,13 +299,28 @@ class PetOwnerListCreatePatchDeleteView(generics.GenericAPIView,
     def patch(self, request:Request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
-
 class PetOwnerGetView(generics.GenericAPIView,
                        mixins.RetrieveModelMixin):
     
     permission_classes = [IsAuthenticated]
     serializer_class = PetOwnerSerializer
     queryset = PetOwner.objects.all()
+
+    def get(self, request:Request, *args, **kwargs):
+        return self.retrieve(request,*args, **kwargs)
+
+class UserPetOwnerGetView(generics.GenericAPIView,
+                       mixins.RetrieveModelMixin):
+    
+    permission_classes = [IsAuthenticated]
+    serializer_class = PetOwnerWithVisitsSerializer
+    queryset = PetOwner.objects.all()
+
+    def get_object(self):
+        try:
+            return PetOwner.objects.get(user=self.request.user)
+        except PetOwner.DoesNotExist:
+            raise NotFound(detail="Pet owner profile not found.")
 
     def get(self, request:Request, *args, **kwargs):
         return self.retrieve(request,*args, **kwargs)
@@ -434,3 +483,33 @@ class VisitGetDeletePatchView(generics.GenericAPIView,
     
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
+
+
+class GetSecretUploadUrl(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request:Request, *args, **kwargs):
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        random_uuid = str(uuid.uuid4())
+        new_random_filename = f"{timestamp}_{random_uuid}"
+        try:
+            # Generate presigned URL with new filename
+            s3_client = boto3.client('s3',
+                    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+                    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
+            )
+            presigned_url = s3_client.generate_presigned_url(
+                'put_object',
+                Params={
+                    'Bucket': os.getenv('AWS_STORAGE_BUCKET_NAME'),
+                    'Key': new_random_filename
+                },
+                    ExpiresIn=1800
+                )
+        except Exception as e:
+            return Response(data={"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({
+            'upload_url': presigned_url
+        }, status=status.HTTP_200_OK)
+    

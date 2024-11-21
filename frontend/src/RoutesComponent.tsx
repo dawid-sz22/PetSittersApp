@@ -15,6 +15,8 @@ import { NotFoundPage } from "./pages/NotFoundPage.tsx";
 import { ProfilePage } from "./pages/ProfilePage.tsx";
 import CreatePetSitterPage from "./pages/CreatePetSitterPage.tsx";
 import PetSitterDetails from "./components/PetSitterDetails.tsx";
+import { PetSitterProfilePage } from "./pages/PetSitterProfilePage.tsx";
+import { PetOwnerProfilePage } from "./pages/PetOwnerProfilePage.tsx";
 
 function RoutesComponent() {
   const isLoggedIn = () => {
@@ -59,6 +61,8 @@ function RoutesComponent() {
               )
             }
           ></Route>
+          <Route path="/pet-sitter-profile" element={<PetSitterProfilePage />} />
+          <Route path="/pet-owner-profile" element={<PetOwnerProfilePage />} />
           <Route path={"/login/"} element={<LoginPage />}></Route>
           <Route path={"/register/"} element={<RegisterPage />}></Route>
           <Route path={"/create-pet-sitter/"} element={<CreatePetSitterPage />}></Route>

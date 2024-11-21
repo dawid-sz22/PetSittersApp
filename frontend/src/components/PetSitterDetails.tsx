@@ -1,8 +1,8 @@
-import { PetSitterDetailsType } from "../types.tsx";
+import { PetSitterDetailsType, Visit } from "../types.tsx";
 import Pin from "../assets/Pin.tsx";
 import { PawIcon } from "../assets/PawIcon.tsx";
 import { useParams } from "react-router-dom";
-import { getPetSitterDetailsAPI } from "../apiConfig.tsx";
+import { getPetSitterDetailsAPI, getPetSitterVisitsAPI } from "../apiConfig.tsx";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "./ErrorFetching.tsx";
@@ -14,6 +14,9 @@ function PetSitterDetails() {
     useState<PetSitterDetailsType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [visits, setVisits] = useState<Visit[]>([]);
+  const [visitsLoading, setVisitsLoading] = useState(true);
+  const [visitsError, setVisitsError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchPetSitterDetails() {
@@ -22,6 +25,7 @@ function PetSitterDetails() {
           setIsLoading(true);
           const response = await getPetSitterDetailsAPI(id);
           setPetSitterDetails(response);
+          setVisits(response?.visits || []);
         }
       } catch (error) {
         setError("Wystąpił błąd podczas pobierania danych");
@@ -31,6 +35,7 @@ function PetSitterDetails() {
     }
     fetchPetSitterDetails();
   }, [id]);
+
 
   if (isLoading) {
     return (
@@ -121,6 +126,61 @@ function PetSitterDetails() {
             </strong>
           </p>
         </div>
+      </div>
+
+      <div className="rounded-2xl shadow-lg border p-6 bg-blue-100 max-w-sm mx-auto">
+        <h2 className="text-xl font-bold mb-4 text-center">Historia Wizyt</h2>
+        {visitsError ? (
+          <p className="text-red-500">{visitsError}</p>
+        ) : visits.length === 0 ? (
+          <p className="text-center text-gray-600">Brak historii wizyt</p>
+        ) : (
+          <div className="space-y-4">
+            {visits.map((visit) => (
+              <div
+                key={visit.id}
+                className="bg-white rounded-lg p-4 border-2 border-black"
+              >
+                <div className="space-y-2">
+                  {/* Pet Info */}
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <span className="font-bold">{visit.pet_data.name}</span>
+                  </div>
+                  
+                  {/* Date Range */}
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <strong>Od:</strong>
+                      <div>{new Date(visit.date_range_of_visit.lower).toLocaleDateString()}</div>
+                      <div>{new Date(visit.date_range_of_visit.lower).toLocaleTimeString()}</div>
+                    </div>
+                    <div>
+                      <strong>Do:</strong>
+                      <div>{new Date(visit.date_range_of_visit.upper).toLocaleDateString()}</div>
+                      <div>{new Date(visit.date_range_of_visit.upper).toLocaleTimeString()}</div>
+                    </div>
+                  </div>
+
+                  {/* Services */}
+                  <div className="mt-2">
+                    <strong>Usługi:</strong>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {visit.services &&
+                        visit.services.map((service) => (
+                          <span
+                            key={service.id}
+                            className="bg-blue-100 px-2 py-1 rounded-full text-sm"
+                        >
+                          {service.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

@@ -6,6 +6,7 @@ from rest_framework.validators import ValidationError
 from rest_framework.authtoken.models import Token
 from psycopg2.extras import DateTimeRange
 from drf_extra_fields.fields import DateTimeRangeField
+from rest_framework.serializers import SerializerMethodField
 
 class SignUpSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=80)
@@ -62,9 +63,16 @@ class PasswordResetSerializer(serializers.ModelSerializer):
 
 class PetSitterSerializer(serializers.ModelSerializer):
     user_data = UserSerializer(source='user', read_only=True)
+    visits = SerializerMethodField()
+
     class Meta:
         model = PetSitter
-        fields = ['id', 'experience_in_months', 'daily_rate', 'hourly_rate', 'description_bio','user_data']
+        fields = ['id', 'experience_in_months', 'daily_rate', 'hourly_rate', 'description_bio', 'user_data', 'visits']
+
+    def get_visits(self, obj):
+        visits = Visit.objects.filter(pet_sitter=obj)
+        return VisitGetUpdateSeriallizer(visits, many=True).data
+
 class PetSitterWithoutUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = PetSitter
@@ -77,9 +85,37 @@ class PetSitterUpdateDeleteSerializer(serializers.ModelSerializer):
 
 class PetOwnerSerializer(serializers.ModelSerializer):
     user_data = UserSerializer(source='user', read_only=True)
+    pets = SerializerMethodField()
+    
     class Meta:
         model = PetOwner
-        fields = ['id','description_bio','user_data']
+        fields = ['id','description_bio','user_data', 'visits', 'pets']
+    
+    def get_pets(self, obj):
+        try:
+            return PetWithoutOwnerSerializer(Pet.objects.filter(pet_owner=obj), many=True).data
+        except:
+            return None
+        
+class PetOwnerWithVisitsSerializer(serializers.ModelSerializer):
+    visits = SerializerMethodField()
+    pets = SerializerMethodField()
+    
+    class Meta:
+        model = PetOwner
+        fields = ['id','description_bio', 'visits', 'pets']
+
+    def get_visits(self, obj):
+        try:
+            return VisitGetUpdateSeriallizer(Visit.objects.filter(pet__pet_owner=obj), many=True).data
+        except:
+            return None
+    
+    def get_pets(self, obj):
+        try:
+            return PetWithoutOwnerSerializer(Pet.objects.filter(pet_owner=obj), many=True).data
+        except:
+            return None
 
 class PetOwnerUpdateDeleteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -115,38 +151,38 @@ class VisitCreateSeriallizer(serializers.ModelSerializer):
     pet_data = PetSerializer(source='pet', read_only=True)
     pet_sitter_data = PetSitterSerializer(source='pet_sitter', read_only=True)
     date_range_of_visit = DateTimeRangeField()
+    pet = serializers.PrimaryKeyRelatedField(write_only=True, queryset=Pet.objects.all())
+    pet_sitter = serializers.PrimaryKeyRelatedField(write_only=True, queryset=PetSitter.objects.all())
+    services = serializers.PrimaryKeyRelatedField(write_only=True, queryset=Service.objects.all(), many=True)
+    services_data = ServiceSerializer(source='services', read_only=True, many=True)
     class Meta:
         model = Visit
-        fields = ['id', 'pet_sitter', 'pet', 'services', 'date_range_of_visit', 'pet_data', 'pet_sitter_data']
+        fields = ['id', 'pet_sitter', 'pet', 'services', 'price', 'date_range_of_visit', 'pet_data', 'pet_sitter_data', 'services_data']
         
 class VisitGetUpdateSeriallizer(serializers.ModelSerializer):
     pet_data = PetSerializer(source='pet', read_only=True)
     pet_sitter_data = PetSitterSerializer(source='pet_sitter', read_only=True)
+    services_data = ServiceSerializer(source='services', read_only=True, many=True)
     date_range_of_visit = DateTimeRangeField()
+    pet = serializers.PrimaryKeyRelatedField(write_only=True, queryset=Pet.objects.all())
+    pet_sitter = serializers.PrimaryKeyRelatedField(write_only=True, queryset=PetSitter.objects.all())
+    services = serializers.PrimaryKeyRelatedField(write_only=True, queryset=Service.objects.all(), many=True)
     class Meta:
         model = Visit
-        fields = ['id', 'pet_sitter', 'pet', 'services', 'rating', 'review', 'date_range_of_visit',
-                  'visit_notes', 'is_accepted', 'is_over','pet_data', 'pet_sitter_data']
+        fields = ['id', 'pet_sitter', 'pet', 'services', 'rating', 'review', 'price', 'date_range_of_visit',
+                  'visit_notes', 'is_accepted', 'is_over','pet_data', 'pet_sitter_data', 'services_data']
 
 class UserAuthorizedSerializer(serializers.ModelSerializer):
-    pets = serializers.SerializerMethodField()
-    pet_sitter_details = serializers.SerializerMethodField()
+    is_pet_sitter = serializers.SerializerMethodField()
+    is_pet_owner = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = ['email', 'username', 'date_of_birth', 'first_name', 'last_name',
                  'phone_number', 'address_city', 'address_street', 'address_house', 
-                 'profile_picture_url', 'created_at', 'updated_at', 'pets', 'pet_sitter_details']
-
-    def get_pets(self, obj):
-        try:
-            pet_owner = PetOwner.objects.get(user=obj)
-            pets = Pet.objects.filter(pet_owner=pet_owner)
-            return PetWithoutOwnerSerializer(pets, many=True).data
-        except PetOwner.DoesNotExist:
-            return []
-        
-    def get_pet_sitter_details(self, obj):
-        try:
-            return PetSitterWithoutUserSerializer(PetSitter.objects.get(user=obj)).data
-        except PetSitter.DoesNotExist:
-            return None
+                 'profile_picture_url', 'created_at', 'updated_at', 'is_pet_sitter', 'is_pet_owner']
+    
+    def get_is_pet_sitter(self, obj):
+        return PetSitter.objects.filter(user=obj).exists()
+    
+    def get_is_pet_owner(self, obj):
+        return PetOwner.objects.filter(user=obj).exists()

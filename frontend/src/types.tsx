@@ -26,7 +26,27 @@ export interface Pet {
   favorite_activities: string;
   feeding_info: string;
   photo_URL: string;
-  species_data: PetSpecies; 
+  species_data: PetSpecies;
+}
+
+export interface PetOwner {
+  id: number;
+  description_bio: string;
+  user_data: UserData;
+}
+
+export interface PetData {
+  id: number;
+  breed: string;
+  name: string;
+  age: number;
+  weight: number;
+  info_special_treatment: string;
+  favorite_activities: string;
+  feeding_info: string;
+  photo_URL: string;
+  species_data: PetSpecies;
+  pet_owner_data: PetOwner;
 }
 
 export interface UserData {
@@ -40,9 +60,8 @@ export interface UserData {
   address_street: string;
   address_house: string | null;
   profile_picture_url: string;
-  pets: Pet[] | null;
   is_pet_sitter: boolean;
-  pet_sitter_details: PetSitterDetailsType | null;
+  is_pet_owner: boolean;
 }
 
 export interface UserDataSimple {
@@ -66,6 +85,7 @@ export interface PetSitterDetailsType {
   hourly_rate: number;
   description_bio: string;
   user_data: UserDataSimple;
+  visits: Visit[] | null;
 }
 
 export interface CreatePetSitterData {
@@ -76,7 +96,39 @@ export interface CreatePetSitterData {
   description_bio: string;
 }
 
+export type Service = {
+  id: number;
+  name: string;
+};
+
+export type DateTimeRange = {
+  lower: string;
+  upper: string;
+};
+
+
 export type BaseModalProps = {
   isOpen: boolean;
   onClose: () => void;
+};
+
+export type Visit = {
+  id: number;
+  pet_sitter_data: PetSitterDetailsType;
+  pet_data: PetData;
+  date_range_of_visit: DateTimeRange;
+  services: Service[];
+  is_accepted: boolean;
+  is_over: boolean;
+  visit_notes: string | null;
+  rating: number | null;
+  review: string | null;
+  price: number | null;
+};
+
+export type PetOwnerData = {
+  id: number;
+  description_bio: string;
+  visits: Visit[] | null;
+  pets: Pet[] | null;
 };

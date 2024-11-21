@@ -86,6 +86,7 @@ function RegisterPage() {
       }
     } catch (e) {
       if (e instanceof Error) setErrorRegister(e.message);
+      setLoading(false);
       console.log(e);
 
       return;
