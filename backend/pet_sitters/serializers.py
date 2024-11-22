@@ -89,7 +89,7 @@ class PetOwnerSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = PetOwner
-        fields = ['id','description_bio','user_data', 'visits', 'pets']
+        fields = ['id','description_bio','user_data', 'pets']
     
     def get_pets(self, obj):
         try:

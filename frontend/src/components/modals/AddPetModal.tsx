@@ -48,14 +48,12 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
     try {
       if (petPhoto) {
         try {
-          const photoURL = await uploadFileToS3API(secretUploadUrl, petPhoto);
-          setPhotoURL(photoURL);
+          await uploadFileToS3API(secretUploadUrl, petPhoto);
         } catch (error) {
           console.error("Error uploading file to S3:", error);
         }
       }
       console.log(photoURL);
-      return;
 
       await handleAddPetAPI({
         name: petName,
@@ -66,7 +64,7 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
         info_special_treatment: petSpecialTreatment || undefined,
         favorite_activities: petActivities || undefined,
         feeding_info: petFeeding || undefined,
-        photo_URL: photoURL || undefined,
+        photo_URL: secretUploadUrl.split("?")[0] || undefined,
       });
       onClose();
       toast.success("Zwierzę zostało dodane!", {

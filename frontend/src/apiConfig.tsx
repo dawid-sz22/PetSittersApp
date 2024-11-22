@@ -30,6 +30,8 @@ export const handleLoginAPI = async (email: string, password: string) => {
     localStorage.setItem("tokenPetSitter", token);
     localStorage.setItem("usernamePetSitter", response.data.username);
     localStorage.setItem("userIDPetSitter", response.data.user_id);
+    localStorage.setItem("isPetSitter", response.data.is_pet_sitter);
+    localStorage.setItem("isPetOwner", response.data.is_pet_owner);
     window.location.href = "/";
   } catch (e) {
     console.log(e);
@@ -43,6 +45,9 @@ export const isLoggedIn = () => {
 export const logout = () => {
   localStorage.removeItem("tokenPetSitter");
   localStorage.removeItem("usernamePetSitter");
+  localStorage.removeItem("userIDPetSitter");
+  localStorage.removeItem("isPetSitter");
+  localStorage.removeItem("isPetOwner");
   window.location.href = "/";
 };
 
@@ -147,6 +152,7 @@ export const handleUpdateUserAPI = async (data: {
   address_city?: string;
   address_street?: string;
   address_house?: string;
+  profile_picture_url?: string;
 }) => {
   try {
     setAuthToken();
@@ -180,16 +186,17 @@ export const getUserDataAPI = async (): Promise<UserData | null> => {
   }
 };
 
-export const getUserPetSitterAPI = async (): Promise<PetSitterDetailsType | null> => {
-  try {
-    setAuthToken();
-    const response = await axios.get(`${API_URL}/user/pet_sitter/`);
-    return response.data;
-  } catch (e) {
-    console.log(e);
-    throw e;
-  }
-};
+export const getUserPetSitterAPI =
+  async (): Promise<PetSitterDetailsType | null> => {
+    try {
+      setAuthToken();
+      const response = await axios.get(`${API_URL}/user/pet_sitter/`);
+      return response.data;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  };
 
 export const getUserPetOwnerAPI = async (): Promise<PetOwnerData | null> => {
   try {
@@ -318,12 +325,11 @@ export const getVisitsAPI = async (id: string): Promise<Visit[] | null> => {
 };
 
 export const getPetOwnerAPI = async (
-  id: string,
+  id: string
 ): Promise<PetOwnerData | null> => {
   try {
     setAuthToken();
-    const response = await axios.get(`${API_URL}/pet_owner/${id}/`, {
-    });
+    const response = await axios.get(`${API_URL}/pet_owner/${id}/`, {});
     return response.data;
   } catch (e) {
     console.log(e);
@@ -335,7 +341,7 @@ export const getSecretUploadUrlAPI = async () => {
   try {
     setAuthToken();
     const response = await axios.get(`${API_URL}/upload_url/`);
-    return response.data;
+    return response.data.upload_url;
   } catch (e) {
     console.log(e);
     throw e;
@@ -344,11 +350,11 @@ export const getSecretUploadUrlAPI = async () => {
 
 export const uploadFileToS3API = async (uploadUrl: string, file: File) => {
   try {
-    console.log(uploadUrl.upload_url);
-    const response = await axios.put(uploadUrl.upload_url, file, {
+    console.log(uploadUrl);
+    const response = await axios.put(uploadUrl, file, {
       headers: {
         "Content-Type": "multipart/form-data",
-        "Authorization": null
+        Authorization: null,
       },
     });
     return response.data;
@@ -357,4 +363,3 @@ export const uploadFileToS3API = async (uploadUrl: string, file: File) => {
     throw e;
   }
 };
-

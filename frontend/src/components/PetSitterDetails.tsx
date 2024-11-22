@@ -2,7 +2,7 @@ import { PetSitterDetailsType, Visit } from "../types.tsx";
 import Pin from "../assets/Pin.tsx";
 import { PawIcon } from "../assets/PawIcon.tsx";
 import { useParams } from "react-router-dom";
-import { getPetSitterDetailsAPI, getPetSitterVisitsAPI } from "../apiConfig.tsx";
+import { getPetSitterDetailsAPI } from "../apiConfig.tsx";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "./ErrorFetching.tsx";
@@ -15,7 +15,6 @@ function PetSitterDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visits, setVisits] = useState<Visit[]>([]);
-  const [visitsLoading, setVisitsLoading] = useState(true);
   const [visitsError, setVisitsError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -61,9 +60,7 @@ function PetSitterDetails() {
       <div className="rounded-2xl shadow-lg border p-6 bg-blue-100 max-w-sm mx-auto ">
         <div className="flex flex-col justify-center items-center w-48 h-48 bg-white rounded-full overflow-hidden shadow-lg mx-auto border-2 border-black">
           <img
-            src={
-              "https://plus.unsplash.com/premium_photo-1689977968861-9c91dbb16049?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZSUyMHBpY3R1cmV8ZW58MHx8MHx8fDA%3D"
-            }
+            src={petSitterDetails?.user_data.profile_picture_url}
             className="w-full h-full object-cover"
             alt={`${petSitterDetails?.user_data.first_name}'s profile`}
           />

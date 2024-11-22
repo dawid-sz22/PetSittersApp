@@ -73,11 +73,9 @@ function PetOwnerProfilePage() {
                 </h2>
                 <div className="bg-white rounded-lg p-4 border-2 border-black">
                   <div className="flex flex-col justify-center items-center mb-4">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-black mb-3">
+                    <div className="w-48 h-48 rounded-full overflow-hidden border-2 border-black mb-3">
                       <img
-                        src={
-                          "default_avatar_url"
-                        }
+                        src={userData?.profile_picture_url}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />
@@ -121,7 +119,7 @@ function PetOwnerProfilePage() {
                         <div className="flex flex-col items-center">
                           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-black mb-4">
                             <img
-                              src={pet.photo_URL || "default_pet_url"}
+                              src={pet.photo_URL || ""}
                               alt={`${pet.name}'s photo`}
                               className="w-full h-full object-cover"
                             />

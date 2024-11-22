@@ -1,13 +1,34 @@
 import { BaseModalProps } from "../../types";
-import { useState } from "react";
-import { handleUpdateUserAPI } from "../../apiConfig";
+import { useState, useEffect } from "react";
+import {
+  handleUpdateUserAPI,
+  getSecretUploadUrlAPI,
+  uploadFileToS3API,
+} from "../../apiConfig";
 import { toast } from "react-toastify";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import { CircularProgress } from "@mui/material";
 
 export function ProfileModal({ isOpen, onClose }: BaseModalProps) {
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState<string | undefined>(undefined);
   const [phoneError, setPhoneError] = useState("");
+  const [secretUploadUrl, setSecretUploadUrl] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const getSecretUploadUrl = async () => {
+      try {
+        const secretUploadUrl = await getSecretUploadUrlAPI();
+        setSecretUploadUrl(secretUploadUrl);
+      } catch (error) {
+        console.error("Error fetching secret upload URL:", error);
+      }
+    };
+
+    getSecretUploadUrl();
+  }, []);
 
   const handlePhoneNumberValidation = (phone: string | undefined) => {
     setPhoneNumber(phone);
@@ -20,10 +41,22 @@ export function ProfileModal({ isOpen, onClose }: BaseModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
+      if (profilePhoto) {
+        try {
+          await uploadFileToS3API(secretUploadUrl, profilePhoto);
+        } catch (error) {
+          console.error("Error uploading file to S3:", error);
+        }
+      }
+
       await handleUpdateUserAPI({
-        username: username,
-        phone_number: phoneNumber,
+        username: username || undefined,
+        phone_number: phoneNumber || undefined,
+        profile_picture_url: profilePhoto
+          ? secretUploadUrl.split("?")[0]
+          : undefined,
       });
       onClose();
       toast.success("Dane osobowe zostały zmienione!", {
@@ -36,11 +69,14 @@ export function ProfileModal({ isOpen, onClose }: BaseModalProps) {
           width: "100%",
         },
       });
-      localStorage.setItem("usernamePetSitter", username);
+      if (username) {
+        localStorage.setItem("usernamePetSitter", username);
+      }
       window.location.reload();
 
       setUsername("");
       setPhoneNumber(undefined);
+      setProfilePhoto(null);
     } catch (err) {
       toast.error("Nie udało się zmienić danych osobowych :(", {
         position: "top-center",
@@ -53,6 +89,8 @@ export function ProfileModal({ isOpen, onClose }: BaseModalProps) {
         },
       });
       console.error("Error updating profile:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -80,7 +118,6 @@ export function ProfileModal({ isOpen, onClose }: BaseModalProps) {
               initialValueFormat="national"
               withCountryCallingCode={true}
               className="w-full p-2 border rounded"
-              required
               defaultCountry="PL"
             />
             {phoneError && (
@@ -99,7 +136,19 @@ export function ProfileModal({ isOpen, onClose }: BaseModalProps) {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Zdjęcie profilowe
+            </label>
+            <input
+              type="file"
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                setProfilePhoto(file);
+              }}
               className="w-full p-2 border rounded"
             />
           </div>
@@ -111,16 +160,20 @@ export function ProfileModal({ isOpen, onClose }: BaseModalProps) {
             >
               Anuluj
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-700 text-white rounded"
-              disabled={!!phoneError}
-            >
-              Zapisz zmiany
-            </button>
+            {isLoading ? (
+              <CircularProgress size={24} />
+            ) : (
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-700 text-white rounded"
+                disabled={!!phoneError}
+              >
+                Zapisz zmiany
+              </button>
+            )}
           </div>
         </form>
       </div>
     </div>
   );
-} 
+}

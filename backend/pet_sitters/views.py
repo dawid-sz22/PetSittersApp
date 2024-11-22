@@ -138,7 +138,6 @@ class UserDeletePatchGetView(generics.GenericAPIView,
                           mixins.UpdateModelMixin,
                           mixins.RetrieveModelMixin):
     permission_classes = [IsAuthenticated, AuthorOnly]
-    serializer_class = UserAuthorizedSerializer
     queryset = User.objects.all()
 
     def get_object(self):
@@ -157,9 +156,11 @@ class UserDeletePatchGetView(generics.GenericAPIView,
         return self.destroy(request,*args, **kwargs)
     
     def patch(self, request:Request, *args, **kwargs):
+        self.serializer_class = UserSerializer
         return self.partial_update(request, *args, **kwargs)
     
     def get(self, request:Request, *args, **kwargs):
+        self.serializer_class = UserAuthorizedSerializer
         return self.retrieve(request, *args, **kwargs)
 
 
@@ -169,7 +170,7 @@ class PetSitterListCreatePatchDeleteView(generics.GenericAPIView,
                               mixins.CreateModelMixin,
                               mixins.UpdateModelMixin):
     
-    permission_classes = [IsAuthenticated, AuthorOnlyOrReadOnly]
+    permission_classes = [AuthorOnlyOrReadOnly, IsAuthenticatedOrReadOnly]
     queryset = PetSitter.objects.all()
 
     def get_serializer_class(self):
@@ -218,7 +219,7 @@ class PetSitterListCreatePatchDeleteView(generics.GenericAPIView,
 class PetSitterGetView(generics.GenericAPIView,
                        mixins.RetrieveModelMixin):
     
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PetSitterSerializer
     queryset = PetSitter.objects.all()
 

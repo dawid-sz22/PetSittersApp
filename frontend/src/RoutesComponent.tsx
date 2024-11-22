@@ -27,45 +27,32 @@ function RoutesComponent() {
     <>
       <Router>
         <Routes>
-          <Route
-            path={"/"}
-            element={<HomePage />}
-          />
+          <Route path={"/"} element={<HomePage />} />
           <Route
             path={"/pet-sitters/"}
-            element={
-              isLoggedIn() ? (
-                <PetSittersListPage />
-              ) : (
-                <Navigate to={"/login"} />
-              )
-            }
+            element={<PetSittersListPage />}
           ></Route>
           <Route
             path={"/pet-sitter/:id"}
-            element={
-              isLoggedIn() ? (
-                <PetSitterDetails />
-              ) : (
-                <Navigate to={"/login"} />
-              )
-            }
+            element={<PetSitterDetails />}
           ></Route>
           <Route
             path={"/profile/"}
             element={
-              isLoggedIn() ? (
-                <ProfilePage />
-              ) : (
-                <Navigate to={"/login"} />
-              )
+              isLoggedIn() ? <ProfilePage /> : <Navigate to={"/login"} />
             }
           ></Route>
-          <Route path="/pet-sitter-profile" element={<PetSitterProfilePage />} />
+          <Route
+            path="/pet-sitter-profile"
+            element={<PetSitterProfilePage />}
+          />
           <Route path="/pet-owner-profile" element={<PetOwnerProfilePage />} />
           <Route path={"/login/"} element={<LoginPage />}></Route>
           <Route path={"/register/"} element={<RegisterPage />}></Route>
-          <Route path={"/create-pet-sitter/"} element={<CreatePetSitterPage />}></Route>
+          <Route
+            path={"/create-pet-sitter/"}
+            element={<CreatePetSitterPage />}
+          ></Route>
           <Route
             path={"/reset-password/"}
             element={<ResetPasswordRequest />}

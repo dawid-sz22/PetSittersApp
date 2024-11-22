@@ -16,9 +16,7 @@ function PetSitterComponent({
       <div className="rounded-3xl shadow-lg border p-3 bg-blue-100 max-w-xl mx-auto">
         <div className="flex flex-col justify-center items-center w-48 h-48 bg-white rounded-full overflow-hidden shadow-lg mx-auto border-2 border-black">
           <img
-            src={
-              "https://plus.unsplash.com/premium_photo-1689977968861-9c91dbb16049?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZSUyMHBpY3R1cmV8ZW58MHx8MHx8fDA%3D"
-            }
+            src={user_data.profile_picture_url}
             className="w-full h-full object-cover"
             alt={`${user_data.first_name} ${user_data.last_name}'s profile`}
           />

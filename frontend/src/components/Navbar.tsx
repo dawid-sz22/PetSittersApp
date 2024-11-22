@@ -21,31 +21,54 @@ function Navbar() {
       </div>
       <ul className="flex space-x-4 items-center">
         <li>
-          {!isLoggedIn() ? (
-            <Link
-              to={"/login"}
-              className="text-white text-lg hover:underline rounded-lg px-3 py-1 font-bold"
-            >
-              Login
-            </Link>
-          ) : null}
-        </li>
-        <li>
           <Link
             to={"/pet-sitters"}
             className="text-white text-lg hover:underline rounded-lg px-3 py-1 font-bold"
           >
-            Pet Sitters
+            Opiekunowie
           </Link>
         </li>
-        <li>
-          <Link
-            to={"/"}
-            className="text-white text-lg hover:underline rounded-lg px-3 py-1 font-bold"
-          >
-            Pet Owners
-          </Link>
-        </li>
+        <li className="h-8 border-l-2 px-1 border-white"></li>
+        {localStorage.getItem("isPetOwner") ? (
+          <li>
+            <Link
+              to={"/pet-owner-profile"}
+              className="text-white text-lg hover:underline rounded-lg px-3 py-1 font-bold"
+            >
+              Profil właściciela
+            </Link>
+          </li>
+        ) : null}
+        {localStorage.getItem("isPetSitter") ? (
+          <li>
+            <Link
+              to={"/pet-sitter-profile"}
+              className="text-white text-lg hover:underline rounded-lg px-3 py-1 font-bold"
+            >
+              Profil opiekuna
+            </Link>
+          </li>
+        ) : null}
+        {!isLoggedIn() ? (
+          <li>
+            <Link
+              to={"/login"}
+              className="bg-white border-2 border-black text-black text-lg px-3 py-2 font-bold hover:bg-black hover:text-white hover:border-2 hover:border-white"
+            >
+              Zaloguj się
+            </Link>
+          </li>
+        ) : null}
+        {!isLoggedIn() ? (
+          <li>
+            <Link
+              to={"/register"}
+              className="bg-black border-2 border-white text-white text-lg px-3 py-2 font-bold hover:bg-white hover:text-black"
+            >
+              Zarejestruj się
+            </Link>
+          </li>
+        ) : null}
         {isLoggedIn() ? (
           <li className="relative">
             <Menu as="div" className="relative z-10">

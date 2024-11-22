@@ -62,10 +62,7 @@ function ProfilePage() {
             <div className="rounded-2xl shadow-lg border p-4 bg-blue-100 w-1/2">
               <div className="flex flex-col justify-center items-center w-64 h-64 bg-white rounded-full overflow-hidden shadow-lg mx-auto border-2 border-black mb-4">
                 <img
-                  src={
-                    userData?.profile_picture_url ||
-                    "https://plus.unsplash.com/premium_photo-1689977968861-9c91dbb16049?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZSUyMHBpY3R1cmV8ZW58MHx8MHx8fDA%3D"
-                  }
+                  src={userData?.profile_picture_url}
                   className="w-full h-full object-cover"
                   alt="Profile picture"
                 />
@@ -133,50 +130,49 @@ function ProfilePage() {
                     Edytuj adres
                   </button>
                 </div>
-
-                <div className="bg-white rounded-lg p-3 border-2 border-black">
-                  <h2 className="text-2xl text-center font-bold mb-4">
-                    Ustawienia konta
-                  </h2>
-                  <div className="space-y-2">
-                    <button
-                      className="w-full bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-800"
-                      onClick={() => setShowPasswordModal(true)}
-                    >
-                      Zmień hasło
-                    </button>
-                    <button
-                      className="w-full bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-800"
-                      onClick={() => setShowEmailModal(true)}
-                    >
-                      Zmień email
-                    </button>
-                    <button
-                      className="w-full bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-800"
-                      onClick={() => setShowProfileModal(true)}
-                    >
-                      Edytuj dane osobowe
-                    </button>
-
-                    <button
-                      className="w-full bg-red-600 text-white rounded-lg px-4 py-2 hover:bg-red-700"
-                      onClick={() => setShowDeleteUserModal(true)}
-                    >
-                      Usuń konto
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
 
             <div className="w-1/2 space-y-6">
               <div className="rounded-2xl shadow-lg border p-6 bg-blue-100">
                 <h2 className="text-3xl font-bold text-blue-900 mb-4">
+                  Ustawienia konta
+                </h2>
+                <div className="space-y-2">
+                  <button
+                    className="w-full bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-800"
+                    onClick={() => setShowPasswordModal(true)}
+                  >
+                    Zmień hasło
+                  </button>
+                  <button
+                    className="w-full bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-800"
+                    onClick={() => setShowEmailModal(true)}
+                  >
+                    Zmień email
+                  </button>
+                  <button
+                    className="w-full bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-800"
+                    onClick={() => setShowProfileModal(true)}
+                  >
+                    Edytuj dane osobowe
+                  </button>
+                  <button
+                    className="w-full bg-red-600 text-white rounded-lg px-4 py-2 hover:bg-red-700"
+                    onClick={() => setShowDeleteUserModal(true)}
+                  >
+                    Usuń konto
+                  </button>
+                </div>
+              </div>
+
+              <div className="rounded-2xl shadow-lg border p-6 bg-blue-100">
+                <h2 className="text-3xl font-bold text-blue-900 mb-4">
                   Profil właściciela zwierząt
                 </h2>
                 {userData?.is_pet_owner ? (
                   <button
-                    className="w-full bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-800"
+                    className="w-full bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-800"
                     onClick={() => window.location.href = '/pet-owner-profile'}
                   >
                     Przejdź do profilu właściciela
@@ -194,7 +190,7 @@ function ProfilePage() {
                 </h2>
                 {userData?.is_pet_sitter ? (
                   <button
-                    className="w-full bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-800"
+                    className="w-full bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-800"
                     onClick={() => window.location.href = '/pet-sitter-profile'}
                   >
                     Przejdź do profilu opiekuna
@@ -208,7 +204,6 @@ function ProfilePage() {
                   </button>
                 )}
               </div>
-
             </div>
           </div>
           <PasswordModal isOpen={showPasswordModal} onClose={() => setShowPasswordModal(false)} />
