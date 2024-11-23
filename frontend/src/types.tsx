@@ -99,13 +99,13 @@ export interface CreatePetSitterData {
 export type Service = {
   id: number;
   name: string;
+  type: string;
 };
 
 export type DateTimeRange = {
   lower: string;
   upper: string;
 };
-
 
 export type BaseModalProps = {
   isOpen: boolean;
@@ -117,7 +117,7 @@ export type Visit = {
   pet_sitter_data: PetSitterDetailsType;
   pet_data: PetData;
   date_range_of_visit: DateTimeRange;
-  services: Service[];
+  services_data: Service[];
   is_accepted: boolean;
   is_over: boolean;
   visit_notes: string | null;
@@ -131,4 +131,12 @@ export type PetOwnerData = {
   description_bio: string;
   visits: Visit[] | null;
   pets: Pet[] | null;
+};
+
+export type CreateVisitRequest = {
+  pet_sitter: number;
+  pet: number;
+  date_range_of_visit: DateTimeRange;
+  price: number;
+  services: number[]; // array of service IDs
 };

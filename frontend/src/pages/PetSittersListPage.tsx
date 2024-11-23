@@ -77,7 +77,6 @@ function PetSittersListPage() {
 
   useEffect(() => {
     currentItems = filteredResults?.slice(indexOfFirstItem, indexOfLastItem);
-    console.log(filteredResults);
   }, [filteredResults]);
 
   useEffect(() => {

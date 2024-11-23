@@ -7,6 +7,8 @@ import {
   registerArguments,
   UserData,
   Visit,
+  CreateVisitRequest,
+  Service,
 } from "./types.tsx";
 
 const API_URL = "http://127.0.0.1:8000/api";
@@ -357,6 +359,28 @@ export const uploadFileToS3API = async (uploadUrl: string, file: File) => {
         Authorization: null,
       },
     });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const createVisitAPI = async (data: CreateVisitRequest) => {
+  try {
+    setAuthToken();
+    const response = await axios.post(`${API_URL}/visit/`, data);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const getAllServicesAPI = async (): Promise<Service[] | null> => {
+  try {
+    setAuthToken();
+    const response = await axios.get(`${API_URL}/service/`);
     return response.data;
   } catch (e) {
     console.log(e);

@@ -450,10 +450,25 @@ class VisitListCreateView(generics.GenericAPIView,
         return self.list(request,*args, **kwargs)
     
     def post(self, request:Request, *args, **kwargs):
-        if get_object_or_404(Pet, id=request.data['pet']).pet_owner.user == self.request.user:
-            return self.create(request,*args, **kwargs)
-        
-        return Response(data={"error":"You're not a pet owner of this pet."}, status=status.HTTP_403_FORBIDDEN)
+        if 'pet' not in request.data:
+            return Response(
+                data={"error": "Pet ID is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        try:
+            pet = get_object_or_404(Pet, id=request.data['pet'])
+            if pet.pet_owner.user == self.request.user:
+                return self.create(request, *args, **kwargs)
+            return Response(
+                data={"error": "You're not a pet owner of this pet."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        except ValueError:
+            return Response(
+                data={"error": "Invalid pet ID format"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         
     

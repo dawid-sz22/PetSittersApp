@@ -17,6 +17,7 @@ urlpatterns =[
     path("pet_owner/<int:pk>/", views.PetOwnerGetView.as_view(), name="PetOwnerGetView"),
     path("pet_species/", views.PetSpeciesListCreatePatchDeleteView.as_view(), name="PetSpeciesListCreatePatchDeleteView"),
     path("pet_species/<int:pk>/", views.PetSpeciesGetView.as_view(), name="PetSpeciesGetView"),
+    path("service/", views.ServiceListView.as_view(), name="ServiceListView"),
     path("pet/", views.PetListCreateView.as_view(), name="PetListCreateView"),
     path("pet/<int:pk>/", views.PetGetDeletePatchView.as_view(), name="PetGetDeletePatchView"),
     path("visit/", views.VisitListCreateView.as_view(), name="VisitListCreateView"),

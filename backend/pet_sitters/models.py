@@ -110,6 +110,10 @@ class Pet(models.Model):
 
 class Service(models.Model):
     name = models.CharField(max_length=30)
+    type = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name    
 
 class Visit(models.Model):
     pet_sitter = models.ForeignKey(PetSitter, on_delete=models.CASCADE)

@@ -73,6 +73,12 @@ class PetSitterSerializer(serializers.ModelSerializer):
         visits = Visit.objects.filter(pet_sitter=obj)
         return VisitGetUpdateSeriallizer(visits, many=True).data
 
+class PetSitterWithoutVisitsSerializer(serializers.ModelSerializer):
+    user_data = UserSerializer(source='user', read_only=True)
+    class Meta:
+        model = PetSitter
+        fields = ['id', 'experience_in_months', 'daily_rate', 'hourly_rate', 'description_bio', 'user_data']
+
 class PetSitterWithoutUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = PetSitter
@@ -96,6 +102,13 @@ class PetOwnerSerializer(serializers.ModelSerializer):
             return PetWithoutOwnerSerializer(Pet.objects.filter(pet_owner=obj), many=True).data
         except:
             return None
+
+class PetOwnerWithoutPetsSerializer(serializers.ModelSerializer):
+    user_data = UserSerializer(source='user', read_only=True)
+    
+    class Meta:
+        model = PetOwner
+        fields = ['id','description_bio','user_data']
         
 class PetOwnerWithVisitsSerializer(serializers.ModelSerializer):
     visits = SerializerMethodField()
@@ -130,7 +143,7 @@ class PetSpeciesSerializer(serializers.ModelSerializer):
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = ['id','name']
+        fields = ['id','name', 'type']
 
 class PetSerializer(serializers.ModelSerializer):
     pet_owner_data = PetOwnerSerializer(source='pet_owner', read_only=True)
@@ -149,7 +162,7 @@ class PetWithoutOwnerSerializer(serializers.ModelSerializer):
 
 class VisitCreateSeriallizer(serializers.ModelSerializer):
     pet_data = PetSerializer(source='pet', read_only=True)
-    pet_sitter_data = PetSitterSerializer(source='pet_sitter', read_only=True)
+    pet_sitter_data = PetSitterWithoutVisitsSerializer(source='pet_sitter', read_only=True)
     date_range_of_visit = DateTimeRangeField()
     pet = serializers.PrimaryKeyRelatedField(write_only=True, queryset=Pet.objects.all())
     pet_sitter = serializers.PrimaryKeyRelatedField(write_only=True, queryset=PetSitter.objects.all())
@@ -160,8 +173,8 @@ class VisitCreateSeriallizer(serializers.ModelSerializer):
         fields = ['id', 'pet_sitter', 'pet', 'services', 'price', 'date_range_of_visit', 'pet_data', 'pet_sitter_data', 'services_data']
         
 class VisitGetUpdateSeriallizer(serializers.ModelSerializer):
-    pet_data = PetSerializer(source='pet', read_only=True)
-    pet_sitter_data = PetSitterSerializer(source='pet_sitter', read_only=True)
+    pet_data = PetWithoutOwnerSerializer(source='pet', read_only=True)
+    pet_sitter_data = PetSitterWithoutVisitsSerializer(source='pet_sitter', read_only=True)
     services_data = ServiceSerializer(source='services', read_only=True, many=True)
     date_range_of_visit = DateTimeRangeField()
     pet = serializers.PrimaryKeyRelatedField(write_only=True, queryset=Pet.objects.all())
