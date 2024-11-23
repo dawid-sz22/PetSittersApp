@@ -140,11 +140,11 @@ function PetSitterProfilePage() {
                                   {visit.price} zł
                                 </p>
                               )}
-                              {visit.services.length > 0 && (
+                              {visit.services_data.length > 0 && (
                                 <div className="text-sm">
                                   <span className="font-semibold">Usługi: </span>
                                   <div className="flex flex-wrap gap-1 mt-1">
-                                    {visit.services.map((service, index) => (
+                                    {visit.services_data.map((service, index) => (
                                       <span
                                         key={index}
                                         className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs"

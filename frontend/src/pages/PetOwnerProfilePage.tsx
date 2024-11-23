@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Visit, PetOwnerData, UserData } from "../types";
+import { Visit, PetOwnerData, UserData, Pet } from "../types";
 import { getUserPetOwnerAPI, getUserDataAPI } from "../apiConfig";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "../components/ErrorFetching";
 import { ToastContainer } from "react-toastify";
 import Navbar from "../components/Navbar";
 import { AddPetModal } from "../components/modals/AddPetModal";
+import { EditPetModal } from "../components/modals/EditPetModal";
 
 function PetOwnerProfilePage() {
   const [petOwnerData, setPetOwnerData] = useState<PetOwnerData | null>(null);
@@ -14,6 +15,7 @@ function PetOwnerProfilePage() {
   const [errorFetching, setErrorFetching] = useState<string | null>(null);
   const [showAddPetModal, setShowAddPetModal] = useState(false);
   const [petOwnerVisits, setPetOwnerVisits] = useState<Visit[]>([]);
+  const [editingPet, setEditingPet] = useState<Pet | null>(null);
 
   useEffect(() => {
     const fetchPetOwnerData = async () => {
@@ -49,6 +51,16 @@ function PetOwnerProfilePage() {
     fetchUserData();
   }, []);
 
+  const refreshPetOwnerData = async () => {
+    try {
+      const petOwner = await getUserPetOwnerAPI();
+      setPetOwnerData(petOwner);
+      setPetOwnerVisits(petOwner?.visits || []);
+    } catch (err) {
+      console.error("Error refreshing data:", err);
+    }
+  };
+
   if (errorFetching) {
     return <ErrorFetching error={errorFetching} />;
   }
@@ -73,7 +85,7 @@ function PetOwnerProfilePage() {
                 </h2>
                 <div className="bg-white rounded-lg p-4 border-2 border-black">
                   <div className="flex flex-col justify-center items-center mb-4">
-                    <div className="w-48 h-48 rounded-full overflow-hidden border-2 border-black mb-3">
+                    <div className="w-64 h-64 rounded-full overflow-hidden border-2 border-black mb-2">
                       <img
                         src={userData?.profile_picture_url}
                         alt="Profile"
@@ -116,8 +128,18 @@ function PetOwnerProfilePage() {
                         key={pet.id}
                         className="bg-white border-2 border-black rounded-lg p-4 hover:bg-gray-50 transition-colors shadow-md"
                       >
+                        <div className="flex justify-end mb-2">
+                          <button
+                            onClick={() => setEditingPet(pet)}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                          </button>
+                        </div>
                         <div className="flex flex-col items-center">
-                          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-black mb-4">
+                          <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-black mb-2">
                             <img
                               src={pet.photo_URL || ""}
                               alt={`${pet.name}'s photo`}
@@ -223,11 +245,11 @@ function PetOwnerProfilePage() {
                               {visit.price} zł
                             </p>
                           )}
-                          {visit.services && visit.services.length > 0 && (
+                          {visit.services_data && visit.services_data.length > 0 && (
                             <div className="text-sm">
                               <span className="font-semibold">Usługi: </span>
                               <div className="flex flex-wrap gap-1 mt-1">
-                                {visit.services.map((service, index) => (
+                                {visit.services_data.map((service, index) => (
                                   <span
                                     key={index}
                                     className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs"
@@ -271,6 +293,14 @@ function PetOwnerProfilePage() {
             isOpen={showAddPetModal}
             onClose={() => setShowAddPetModal(false)}
           />
+          {editingPet && (
+            <EditPetModal
+              isOpen={!!editingPet}
+              onClose={() => setEditingPet(null)}
+              pet={editingPet}
+              onPetUpdated={refreshPetOwnerData}
+            />
+          )}
         </div>
       )}
     </>

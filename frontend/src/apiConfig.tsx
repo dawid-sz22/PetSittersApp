@@ -9,6 +9,7 @@ import {
   Visit,
   CreateVisitRequest,
   Service,
+  Pet,
 } from "./types.tsx";
 
 const API_URL = "http://127.0.0.1:8000/api";
@@ -381,6 +382,17 @@ export const getAllServicesAPI = async (): Promise<Service[] | null> => {
   try {
     setAuthToken();
     const response = await axios.get(`${API_URL}/service/`);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const updatePetAPI = async (data: Pet) => {
+  try {
+    setAuthToken();
+    const response = await axios.patch(`${API_URL}/pet/${data.id}/`, data);
     return response.data;
   } catch (e) {
     console.log(e);

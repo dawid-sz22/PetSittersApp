@@ -179,9 +179,22 @@ function PetSitterDetails() {
                     className="bg-white rounded-lg p-4 border-2 border-black"
                   >
                     <div className="space-y-2">
-                      {/* Pet Info */}
+                      {/* Pet Info with Picture */}
                       <div className="flex items-center justify-between border-b pb-2">
-                        <span className="font-bold">{visit.pet_data.name}</span>
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={visit.pet_data.photo_URL}
+                            alt={visit.pet_data.name}
+                            className="w-32 h-32 rounded-full object-cover border border-gray-300"
+                          />
+                          <div>
+                            <span className="font-bold block">{visit.pet_data.name}</span>
+                            {/* Pet Owner Info */}
+                            <span className="text-sm text-gray-600">
+                              Właściciel: {visit.pet_data.pet_owner_data.user_data.first_name} {visit.pet_data.pet_owner_data.user_data.last_name}
+                            </span>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Date Range */}

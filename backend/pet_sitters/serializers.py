@@ -160,6 +160,14 @@ class PetWithoutOwnerSerializer(serializers.ModelSerializer):
         fields = ['id','species','breed','name', 'age', 'weight', 'info_special_treatment', 
         'favorite_activities', 'feeding_info', 'photo_URL', 'species_data']
 
+class PetWithoutOwnerPetsSerializer(serializers.ModelSerializer):
+    pet_owner_data = PetOwnerWithoutPetsSerializer(source='pet_owner', read_only=True)
+    species_data = PetSpeciesSerializer(source='species', read_only=True)
+    class Meta:
+        model = Pet
+        fields = ['id','species','breed','name', 'age', 'weight', 'info_special_treatment', 
+        'favorite_activities', 'feeding_info', 'photo_URL', 'pet_owner_data', 'species_data']
+
 class VisitCreateSeriallizer(serializers.ModelSerializer):
     pet_data = PetSerializer(source='pet', read_only=True)
     pet_sitter_data = PetSitterWithoutVisitsSerializer(source='pet_sitter', read_only=True)
@@ -173,7 +181,7 @@ class VisitCreateSeriallizer(serializers.ModelSerializer):
         fields = ['id', 'pet_sitter', 'pet', 'services', 'price', 'date_range_of_visit', 'pet_data', 'pet_sitter_data', 'services_data']
         
 class VisitGetUpdateSeriallizer(serializers.ModelSerializer):
-    pet_data = PetWithoutOwnerSerializer(source='pet', read_only=True)
+    pet_data = PetWithoutOwnerPetsSerializer(source='pet', read_only=True)
     pet_sitter_data = PetSitterWithoutVisitsSerializer(source='pet_sitter', read_only=True)
     services_data = ServiceSerializer(source='services', read_only=True, many=True)
     date_range_of_visit = DateTimeRangeField()
