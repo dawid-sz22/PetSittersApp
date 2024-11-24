@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Visit, PetOwnerData, UserData, Pet } from "../types";
-import { getUserPetOwnerAPI, getUserDataAPI } from "../apiConfig";
+import { getUserPetOwnerAPI, getUserDataAPI, closeVisitAPI } from "../apiConfig";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "../components/ErrorFetching";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import Navbar from "../components/Navbar";
 import { AddPetModal } from "../components/modals/AddPetModal";
 import { EditPetModal } from "../components/modals/EditPetModal";
@@ -85,6 +85,40 @@ function PetOwnerProfilePage() {
         return true;
     }
   });
+
+  const handleCloseVisit = async (visitId: number) => {
+    try {
+      await closeVisitAPI(visitId);
+      toast.success("Wizyta została zakończona", {
+        position: "top-right",
+        autoClose: 3000,
+        style: {
+          fontSize: "1.2rem",
+          fontWeight: "bold",
+        },
+      });
+      // Refresh visits data
+      const updatedPetOwner = await getUserPetOwnerAPI();
+      setPetOwnerData(updatedPetOwner);
+      setPetOwnerVisits(updatedPetOwner?.visits || []);
+    } catch (err) {
+      console.error("Error closing visit:", err);
+      toast.error("Nie udało się zakończyć wizyty", {
+        position: "top-right",
+        autoClose: 3000,
+        style: {
+          fontSize: "1.2rem",
+          fontWeight: "bold",
+        },
+      });
+    }
+  };
+
+  const notAllowedToCloseVisit = (visit: Visit) => {
+    const endDate = new Date(visit.date_range_of_visit.upper);
+    const now = new Date();
+    return endDate > now;
+  };  
 
   if (errorFetching) {
     return <ErrorFetching error={errorFetching} />;
@@ -555,6 +589,15 @@ function PetOwnerProfilePage() {
                                 className="container bg-blue-600 flex justify-center text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 mt-2 "
                               >
                                 Dodaj/zmień opinię
+                              </button>
+                            )}
+                            {visit.is_accepted && !visit.is_over && (
+                              <button
+                                className="w-full bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded px-4 py-2 hover:bg-gray-700 mt-2"
+                                onClick={() => handleCloseVisit(visit.id)}
+                                disabled={notAllowedToCloseVisit(visit)}
+                              >
+                                Zakończ wizytę
                               </button>
                             )}
                           </div>

@@ -2,13 +2,14 @@ import { PetSitterDetailsType, Visit, Service } from "../types.tsx";
 import Pin from "../assets/Pin.tsx";
 import { PawIcon } from "../assets/PawIcon.tsx";
 import { useParams } from "react-router-dom";
-import { getAllServicesAPI, getPetSitterDetailsAPI } from "../apiConfig.tsx";
+import { getAllServicesAPI, getPetSitterDetailsAPI, getUserPetSitterAPI } from "../apiConfig.tsx";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "./ErrorFetching.tsx";
 import Navbar from "./Navbar.tsx";
 import { isLoggedIn } from "../apiConfig.tsx";
 import ReserveVisitModal from "./ReserveVisitModal";
+import { toast } from "react-toastify";
 
 function PetSitterDetails() {
   const { id } = useParams();

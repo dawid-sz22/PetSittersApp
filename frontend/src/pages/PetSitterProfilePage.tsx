@@ -67,6 +67,7 @@ function PetSitterProfilePage() {
           fontWeight: "bold",
         },
       });
+
     } catch (err) {
       console.error("Error accepting visit:", err);
       toast.error("Nie udało się zaakceptować wizyty", {
@@ -95,36 +96,10 @@ function PetSitterProfilePage() {
           fontWeight: "bold",
         },
       });
+      const updatedVisits = visits.map(visit => visit.id === visitId ? { ...visit, is_over: true } : visit);
+      setVisits(updatedVisits);
     } finally {
       setIsLoadingAcceptingVisit(false);
-    }
-  };
-
-  const handleCloseVisit = async (visitId: number) => {
-    try {
-      await closeVisitAPI(visitId);
-      toast.success("Wizyta została zakończona", {
-        position: "top-right",
-        autoClose: 3000,
-        style: {
-          fontSize: "1.2rem",
-          fontWeight: "bold",
-        },
-      });
-      // Refresh visits data
-      const updatedPetSitter = await getUserPetSitterAPI();
-      setPetSitterDetails(updatedPetSitter);
-      setVisits(updatedPetSitter?.visits || []);
-    } catch (err) {
-      console.error("Error closing visit:", err);
-      toast.error("Nie udało się zakończyć wizyty", {
-        position: "top-right",
-        autoClose: 3000,
-        style: {
-          fontSize: "1.2rem",
-          fontWeight: "bold",
-        },
-      });
     }
   };
 
@@ -145,11 +120,6 @@ function PetSitterProfilePage() {
     }
   });
 
-  const notAllowedToCloseVisit = (visit: Visit) => {
-    const endDate = new Date(visit.date_range_of_visit.upper);
-    const now = new Date();
-    return endDate > now;
-  };
 
   if (errorFetching) {
     return <ErrorFetching error={errorFetching} />;
@@ -464,15 +434,6 @@ function PetSitterProfilePage() {
                                         Odrzuć
                                       </button>
                                     </div>
-                                  )}
-                                  {visit.is_accepted && !visit.is_over && (
-                                    <button
-                                      className="w-full bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded px-4 py-2 hover:bg-gray-700 mt-2"
-                                      onClick={() => handleCloseVisit(visit.id)}
-                                      disabled={notAllowedToCloseVisit(visit)}
-                                    >
-                                      Zakończ wizytę
-                                    </button>
                                   )}
                                 </>
                               )}
