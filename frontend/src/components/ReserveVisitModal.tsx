@@ -47,9 +47,11 @@ function ReserveVisitModal({
   useEffect(() => {
     async function fetchPets() {
       try {
-        const petOwnerData = await getUserPetOwnerAPI();
-        if (petOwnerData?.pets) {
-          setPets(petOwnerData.pets);
+        if (localStorage.getItem("isPetOwner")) {
+          const petOwnerData = await getUserPetOwnerAPI();
+          if (petOwnerData?.pets) {
+            setPets(petOwnerData.pets);
+          }
         }
       } catch (error) {
         setError("Nie udało się pobrać listy zwierząt");

@@ -5,15 +5,11 @@ import { PetSitterDetailsType } from "../types.tsx";
 
 function PetSitterComponent({
   id,
-  experience_in_months,
-  daily_rate,
-  hourly_rate,
-  description_bio,
   user_data,
 }: PetSitterDetailsType) {
   return (
     <>
-      <div className="rounded-3xl shadow-lg border p-3 bg-blue-100 max-w-xl mx-auto">
+      <div className="rounded-3xl shadow-lg border p-3 bg-blue-300 max-w-xl mx-auto">
         <div className="flex flex-col justify-center items-center w-48 h-48 bg-white rounded-full overflow-hidden shadow-lg mx-auto border-2 border-black">
           <img
             src={user_data.profile_picture_url}

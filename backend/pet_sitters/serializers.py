@@ -63,21 +63,48 @@ class PasswordResetSerializer(serializers.ModelSerializer):
 
 class PetSitterSerializer(serializers.ModelSerializer):
     user_data = UserSerializer(source='user', read_only=True)
+    rating = SerializerMethodField(read_only=True)
     visits = SerializerMethodField()
 
     class Meta:
         model = PetSitter
-        fields = ['id', 'experience_in_months', 'daily_rate', 'hourly_rate', 'description_bio', 'user_data', 'visits']
+        fields = ['id', 'experience_in_months', 'daily_rate', 'hourly_rate', 'description_bio', 'user_data', 'visits', 'rating']
 
     def get_visits(self, obj):
         visits = Visit.objects.filter(pet_sitter=obj)
         return VisitGetUpdateSeriallizer(visits, many=True).data
+    def get_rating(self, obj):
+        visits = Visit.objects.filter(pet_sitter=obj)
+        visits_rating = 0
+        visits_count = 0
+        for visit in visits.filter(rating__isnull=False):
+            visits_rating += visit.rating
+            print(visits_count)
+            visits_count += 1
+        
+        if visits_count > 0:
+            return int(visits_rating / visits_count)
+        return None
+    
 
 class PetSitterWithoutVisitsSerializer(serializers.ModelSerializer):
     user_data = UserSerializer(source='user', read_only=True)
+    rating = SerializerMethodField(read_only=True)
     class Meta:
         model = PetSitter
-        fields = ['id', 'experience_in_months', 'daily_rate', 'hourly_rate', 'description_bio', 'user_data']
+        fields = ['id', 'experience_in_months', 'daily_rate', 'hourly_rate', 'description_bio', 'user_data', 'rating']
+    
+    def get_rating(self, obj):
+        visits = Visit.objects.filter(pet_sitter=obj)
+        visits_rating = 0
+        visits_count = 0
+        for visit in visits.filter(rating__isnull=False):
+            visits_rating += visit.rating
+            print(visits_count)
+            visits_count += 1
+        if visits_count > 0:
+            return int(visits_rating / visits_count)
+        return None
 
 class PetSitterWithoutUserSerializer(serializers.ModelSerializer):
     class Meta:

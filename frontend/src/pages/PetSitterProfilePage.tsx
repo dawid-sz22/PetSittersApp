@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { PetSitterDetailsType, Visit } from "../types";
-import { acceptVisitAPI, getUserPetSitterAPI } from "../apiConfig";
+import {
+  acceptVisitAPI,
+  getUserPetSitterAPI,
+  rejectVisitAPI,
+  closeVisitAPI,
+} from "../apiConfig";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "../components/ErrorFetching";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import Navbar from "../components/Navbar";
 import { DeletePetSitterModal } from "../components/modals/DeletePetSitterModal";
 import { EditPetSitterModal } from "../components/modals/EditPetSitterModal";
@@ -12,6 +17,7 @@ function PetSitterProfilePage() {
   const [petSitterDetails, setPetSitterDetails] =
     useState<PetSitterDetailsType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingAcceptingVisit, setIsLoadingAcceptingVisit] = useState(false);
   const [errorFetching, setErrorFetching] = useState<string | null>(null);
   const [showDeletePetSitterModal, setShowDeletePetSitterModal] =
     useState(false);
@@ -50,15 +56,76 @@ function PetSitterProfilePage() {
 
   const handleAcceptVisit = async (visitId: number) => {
     console.log(visitId);
+    setIsLoadingAcceptingVisit(true);
     try {
       await acceptVisitAPI(visitId);
+      toast.success("Wizyta zaakceptowana", {
+        position: "top-right",
+        autoClose: 3000,
+        style: {
+          fontSize: "1.2rem",
+          fontWeight: "bold",
+        },
+      });
     } catch (err) {
       console.error("Error accepting visit:", err);
+      toast.error("Nie udało się zaakceptować wizyty", {
+        position: "top-right",
+        autoClose: 3000,
+        style: {
+          fontSize: "1.2rem",
+          fontWeight: "bold",
+        },
+      });
+    } finally {
+      setIsLoadingAcceptingVisit(false);
     }
   };
 
-  const handleRejectVisit = (visitId: number) => {
+  const handleRejectVisit = async (visitId: number) => {
     console.log(visitId);
+    setIsLoadingAcceptingVisit(true);
+    try {
+      await rejectVisitAPI(visitId);
+      toast.success("Wizyta odrzucona", {
+        position: "top-right",
+        autoClose: 3000,
+        style: {
+          fontSize: "1.2rem",
+          fontWeight: "bold",
+        },
+      });
+    } finally {
+      setIsLoadingAcceptingVisit(false);
+    }
+  };
+
+  const handleCloseVisit = async (visitId: number) => {
+    try {
+      await closeVisitAPI(visitId);
+      toast.success("Wizyta została zakończona", {
+        position: "top-right",
+        autoClose: 3000,
+        style: {
+          fontSize: "1.2rem",
+          fontWeight: "bold",
+        },
+      });
+      // Refresh visits data
+      const updatedPetSitter = await getUserPetSitterAPI();
+      setPetSitterDetails(updatedPetSitter);
+      setVisits(updatedPetSitter?.visits || []);
+    } catch (err) {
+      console.error("Error closing visit:", err);
+      toast.error("Nie udało się zakończyć wizyty", {
+        position: "top-right",
+        autoClose: 3000,
+        style: {
+          fontSize: "1.2rem",
+          fontWeight: "bold",
+        },
+      });
+    }
   };
 
   const filteredVisits = visits.filter((visit) => {
@@ -78,6 +145,12 @@ function PetSitterProfilePage() {
     }
   });
 
+  const notAllowedToCloseVisit = (visit: Visit) => {
+    const endDate = new Date(visit.date_range_of_visit.upper);
+    const now = new Date();
+    return endDate > now;
+  };
+
   if (errorFetching) {
     return <ErrorFetching error={errorFetching} />;
   }
@@ -92,10 +165,9 @@ function PetSitterProfilePage() {
         </div>
       ) : (
         <div className="container mx-auto mt-10 px-4">
-          <div className="flex gap-6">
-            {/* Left Panel - Pet Sitter Data */}
-            <div className="w-1/2">
-              <div className="rounded-2xl shadow-lg border p-6 bg-blue-100 mb-6 max-w-2xl mx-auto">
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="w-full lg:w-1/2">
+              <div className="rounded-2xl shadow-lg border p-4 lg:p-6 bg-blue-100 mb-6 max-w-2xl mx-auto">
                 <h2 className="text-3xl font-bold text-blue-900 mb-4">
                   Dane opiekuna
                 </h2>
@@ -162,20 +234,19 @@ function PetSitterProfilePage() {
               </div>
             </div>
 
-            {/* Right Panel - Visits */}
             {petSitterDetails && (
-              <div className="w-1/2">
-                <div className="rounded-2xl shadow-lg p-6 bg-blue-100 sticky top-4">
+              <div className="w-full lg:w-1/2">
+                <div className="rounded-2xl shadow-lg p-4 lg:p-6 bg-blue-100 lg:sticky lg:top-4">
                   <div className="flex flex-col gap-2">
                     <h2 className="text-3xl font-bold text-center mb-4 text-blue-900">
                       Historia wizyt
                     </h2>
                   </div>
                   <div className="flex flex-grow justify-between items-center mb-4">
-                    <div className="flex flex-grow justify-between gap-2">
+                    <div className="flex flex-grow justify-between gap-1 flex-wrap">
                       <button
                         onClick={() => setVisitFilter("all")}
-                        className={`px-4 py-2 rounded-lg text-m font-medium transition-colors duration-200
+                        className={`px-2 lg:px-4 py-1 lg:py-2 rounded-lg text-sm lg:text-base font-medium transition-colors duration-200
                           ${
                             visitFilter === "all"
                               ? "bg-purple-600 text-white"
@@ -186,7 +257,7 @@ function PetSitterProfilePage() {
                       </button>
                       <button
                         onClick={() => setVisitFilter("pending")}
-                        className={`px-4 py-2 rounded-lg text-m font-medium transition-colors duration-200
+                        className={`px-2 lg:px-4 py-1 lg:py-2 rounded-lg text-sm lg:text-base font-medium transition-colors duration-200
                           ${
                             visitFilter === "pending"
                               ? "bg-blue-600 text-white"
@@ -197,7 +268,7 @@ function PetSitterProfilePage() {
                       </button>
                       <button
                         onClick={() => setVisitFilter("accepted")}
-                        className={`px-4 py-2 rounded-lg text-m font-medium transition-colors duration-200
+                        className={`px-2 lg:px-4 py-1 lg:py-2 rounded-lg text-sm lg:text-base font-medium transition-colors duration-200
                           ${
                             visitFilter === "accepted"
                               ? "bg-green-600 text-white"
@@ -208,7 +279,7 @@ function PetSitterProfilePage() {
                       </button>
                       <button
                         onClick={() => setVisitFilter("rejected")}
-                        className={`px-4 py-2 rounded-lg text-m font-medium transition-colors duration-200
+                        className={`px-2 lg:px-4 py-1 lg:py-2 rounded-lg text-sm lg:text-base font-medium transition-colors duration-200
                           ${
                             visitFilter === "rejected"
                               ? "bg-red-600 text-white"
@@ -219,7 +290,7 @@ function PetSitterProfilePage() {
                       </button>
                       <button
                         onClick={() => setVisitFilter("completed")}
-                        className={`px-4 py-2 rounded-lg text-m font-medium transition-colors duration-200
+                        className={`px-2 lg:px-4 py-1 lg:py-2 rounded-lg text-sm lg:text-base font-medium transition-colors duration-200
                           ${
                             visitFilter === "completed"
                               ? "bg-gray-600 text-white"
@@ -231,7 +302,7 @@ function PetSitterProfilePage() {
                     </div>
                   </div>
                   <div className="bg-white rounded-lg border-2 border-black">
-                    <div className="max-h-[900px] overflow-y-auto overflow-x-hidden">
+                    <div className="max-h-[500px] lg:max-h-[900px] overflow-y-auto overflow-x-hidden">
                       {filteredVisits.length > 0 ? (
                         filteredVisits.map((visit) => (
                           <div
@@ -368,22 +439,42 @@ function PetSitterProfilePage() {
                                     : "Oczekująca"}
                                 </span>
                               </div>
-
-                              {!visit.is_accepted && !visit.is_over && (
-                                <div className="flex gap-2 mt-2">
-                                  <button
-                                    className="flex-1 bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700"
-                                    onClick={() => handleAcceptVisit(visit.id)}
-                                  >
-                                    Akceptuj
-                                  </button>
-                                  <button
-                                    className="flex-1 bg-red-600 text-white rounded px-4 py-2 hover:bg-red-700"
-                                    onClick={() => handleRejectVisit(visit.id)}
-                                  >
-                                    Odrzuć
-                                  </button>
+                              {isLoadingAcceptingVisit ? (
+                                <div className="flex justify-center items-center">
+                                  <CircularProgress size={20} />
                                 </div>
+                              ) : (
+                                <>
+                                  {!visit.is_accepted && !visit.is_over && (
+                                    <div className="flex gap-2 mt-2">
+                                      <button
+                                        className="flex-1 bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700"
+                                        onClick={() =>
+                                          handleAcceptVisit(visit.id)
+                                        }
+                                      >
+                                        Akceptuj
+                                      </button>
+                                      <button
+                                        className="flex-1 bg-red-600 text-white rounded px-4 py-2 hover:bg-red-700"
+                                        onClick={() =>
+                                          handleRejectVisit(visit.id)
+                                        }
+                                      >
+                                        Odrzuć
+                                      </button>
+                                    </div>
+                                  )}
+                                  {visit.is_accepted && !visit.is_over && (
+                                    <button
+                                      className="w-full bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded px-4 py-2 hover:bg-gray-700 mt-2"
+                                      onClick={() => handleCloseVisit(visit.id)}
+                                      disabled={notAllowedToCloseVisit(visit)}
+                                    >
+                                      Zakończ wizytę
+                                    </button>
+                                  )}
+                                </>
                               )}
                             </div>
                           </div>

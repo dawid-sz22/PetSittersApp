@@ -96,6 +96,7 @@ function PetSittersListPage() {
         </div>
       ) : (
         <>
+          <div className="bg-gradient-to-b from-blue-100 to-blue-300 ">
           <div className="flex justify-center items-center py-10">
             <input
               type="search"
@@ -152,6 +153,7 @@ function PetSittersListPage() {
             >
               Next
             </button>
+            </div>
           </div>
         </>
       )}

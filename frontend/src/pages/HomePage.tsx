@@ -5,7 +5,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function HomePage() {
-
   const handleCreatePetSitter = async () => {
     try {
       if (!isLoggedIn()) {
@@ -14,7 +13,7 @@ function HomePage() {
       }
       const userData = await getUserDataAPI();
       console.log(userData);
-      if (userData?.pet_sitter_details) {
+      if (userData?.is_pet_sitter) {
         toast.info("Jesteś już opiekunem!", {
           position: "top-center",
           autoClose: 3000,
@@ -51,24 +50,26 @@ function HomePage() {
     <>
       <Navbar />
       <ToastContainer />
-      <div className="min-h-screen ">
-        <div className="container mx-auto py-80 justify-center">
-          <h1 className="text-4xl font-bold text-center mb-12">
-            Witaj w Pet Sitters!
-          </h1>
-          <div className="flex justify-center gap-8">
-            <button
-              onClick={handleCreatePetSitter}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-lg text-xl shadow-lg transition-colors"
-            >
-              Chcę zostać opiekunem
-            </button>
-            <button
-              onClick={() => (window.location.href = "/pet-sitters")}
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-xl shadow-lg transition-colors"
-            >
-              Szukam opiekuna
-            </button>
+      <div className="min-h-screen bg-[url('./assets/bg_register.jpg')] bg-cover">
+        <div className="container mx-auto py-80 flex justify-center">
+          <div className="bg-white/80 rounded-2xl shadow-lg p-8 max-w-2xl">
+            <h1 className="text-4xl font-bold text-center mb-12">
+              Witaj w Pet Sitters!
+            </h1>
+            <div className="flex justify-center gap-8">
+              <button
+                onClick={handleCreatePetSitter}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-lg text-xl shadow-lg transition-colors"
+              >
+                Chcę zostać opiekunem
+              </button>
+              <button
+                onClick={() => (window.location.href = "/pet-sitters")}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-xl shadow-lg transition-colors"
+              >
+                Szukam opiekuna
+              </button>
+            </div>
           </div>
         </div>
       </div>

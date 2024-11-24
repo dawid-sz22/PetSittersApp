@@ -435,3 +435,48 @@ export const acceptVisitAPI = async (visitId: number) => {
     throw e;
   }
 };
+
+export const rejectVisitAPI = async (visitId: number) => {
+  try {
+    setAuthToken();
+    const response = await axios.patch(`${API_URL}/visit/${visitId}/`, {
+      is_accepted: false,
+      is_over: true,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const closeVisitAPI = async (visitId: number) => {
+  try {
+    setAuthToken();
+    const response = await axios.patch(`${API_URL}/visit/${visitId}/`, {
+      is_over: true,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const addReviewAPI = async (data: {
+  visit: number;
+  rating: number;
+  review: string;
+}) => {
+  try {
+    setAuthToken();
+    const response = await axios.patch(`${API_URL}/visit/${data.visit}/`, {
+      rating: data.rating,
+      review: data.review,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};

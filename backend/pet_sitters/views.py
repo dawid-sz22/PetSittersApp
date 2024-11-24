@@ -422,7 +422,7 @@ class ServiceListView(generics.GenericAPIView,
                               mixins.ListModelMixin,
                               mixins.CreateModelMixin):
     
-    permission_classes = [IsAuthenticated, AdminOnlyOrReadOnly]
+    permission_classes = [AuthorOnlyOrReadOnly]
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
 
@@ -455,13 +455,19 @@ class VisitListCreateView(generics.GenericAPIView,
                 data={"error": "Pet ID is required"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+        if 'pet_sitter' not in request.data:
+            return Response(
+                data={"error": "Pet sitter ID is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
             
         try:
             pet = get_object_or_404(Pet, id=request.data['pet'])
-            if pet.pet_owner.user == self.request.user:
+            pet_sitter = get_object_or_404(PetSitter, id=request.data['pet_sitter'])
+            if pet.pet_owner.user == self.request.user and pet_sitter.user != self.request.user:
                 return self.create(request, *args, **kwargs)
             return Response(
-                data={"error": "You're not a pet owner of this pet."}, 
+                data={"error": "You're not a pet owner of this pet or a pet sitter of this pet sitter."}, 
                 status=status.HTTP_403_FORBIDDEN
             )
         except ValueError:

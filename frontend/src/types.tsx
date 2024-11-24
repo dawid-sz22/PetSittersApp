@@ -86,6 +86,7 @@ export interface PetSitterDetailsType {
   description_bio: string;
   user_data: UserDataSimple;
   visits: Visit[] | null;
+  rating: number | null;
 }
 
 export interface PetSitterDetailsTypeEdit {
