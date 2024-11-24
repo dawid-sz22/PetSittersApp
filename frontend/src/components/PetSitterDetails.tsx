@@ -156,9 +156,9 @@ function PetSitterDetails() {
             </div>
             <button
               onClick={() => setIsReserveModalOpen(true)}
-              className="bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-800"
+              className="w-full mt-4 bg-blue-600 text-white font-semibold rounded-lg px-6 py-3 hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center space-x-2"
             >
-              Zarezerwuj wizytę
+              <span>Zarezerwuj wizytę</span>
             </button>
           </div>
         </div>

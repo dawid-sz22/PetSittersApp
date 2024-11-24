@@ -10,6 +10,7 @@ import {
   CreateVisitRequest,
   Service,
   Pet,
+  PetSitterDetailsTypeEdit,
 } from "./types.tsx";
 
 const API_URL = "http://127.0.0.1:8000/api";
@@ -280,6 +281,17 @@ export const deletePetSitterAPI = async () => {
   }
 };
 
+export const updatePetSitterAPI = async (data: PetSitterDetailsTypeEdit) => {
+  try {
+    setAuthToken();
+    const response = await axios.patch(`${API_URL}/pet_sitter/`, data);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
 export const handleAddPetAPI = async (data: {
   name: string;
   species: string;
@@ -393,6 +405,30 @@ export const updatePetAPI = async (data: Pet) => {
   try {
     setAuthToken();
     const response = await axios.patch(`${API_URL}/pet/${data.id}/`, data);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const deletePetAPI = async (id: number) => {
+  try {
+    setAuthToken();
+    const response = await axios.delete(`${API_URL}/pet/${id}/`);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const acceptVisitAPI = async (visitId: number) => {
+  try {
+    setAuthToken();
+    const response = await axios.patch(`${API_URL}/visit/${visitId}/`, {
+      is_accepted: true,
+    });
     return response.data;
   } catch (e) {
     console.log(e);

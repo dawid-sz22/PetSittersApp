@@ -170,7 +170,7 @@ class PetSitterListCreatePatchDeleteView(generics.GenericAPIView,
                               mixins.CreateModelMixin,
                               mixins.UpdateModelMixin):
     
-    permission_classes = [AuthorOnlyOrReadOnly, IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthorOnlyOrReadOnly]
     queryset = PetSitter.objects.all()
 
     def get_serializer_class(self):

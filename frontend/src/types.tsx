@@ -88,6 +88,14 @@ export interface PetSitterDetailsType {
   visits: Visit[] | null;
 }
 
+export interface PetSitterDetailsTypeEdit {
+  photo_URL: string;
+  experience_in_months: number;
+  daily_rate: number;
+  hourly_rate: number;
+  description_bio: string;
+}
+
 export interface CreatePetSitterData {
   photo_URL: string;
   experience_in_months: number;
