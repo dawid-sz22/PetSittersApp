@@ -133,14 +133,14 @@ function PetOwnerProfilePage() {
           <CircularProgress size={60} />
         </div>
       ) : (
-        <div className=" ">
-          <div className="container mx-auto mt-10 px-4">
+        <div className="bg-gradient-to-b from-sky-100 to-sky-300 pt-10">
+          <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 gap-6">
               {/* Left Column */}
               <div className="space-y-6">
                 {/* Pet Owner Data Panel */}
-                <div className="rounded-2xl shadow-lg border p-6 bg-blue-100">
-                  <h2 className="text-3xl font-bold text-blue-900 mb-4">
+                <div className="rounded-2xl shadow-lg border-2 border-black p-6 bg-sky-100">
+                  <h2 className="text-3xl font-bold text-sky-600 mb-4 ">
                     Profil właściciela zwierząt
                   </h2>
                   <div className="bg-white rounded-lg p-4 border-2 border-black">
@@ -167,9 +167,9 @@ function PetOwnerProfilePage() {
                 </div>
 
                 {/* Pets Panel */}
-                <div className="rounded-2xl shadow-lg border p-6 bg-blue-100">
+                <div className="rounded-2xl shadow-lg border-2 border-black p-6 bg-sky-100">
                   <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-3xl font-bold text-blue-900">
+                    <h2 className="text-3xl font-bold text-sky-600">
                       Moje zwierzęta
                     </h2>
                     <button
@@ -295,9 +295,9 @@ function PetOwnerProfilePage() {
               </div>
 
               {/* Right Column - Visits Panel */}
-              <div className="rounded-2xl shadow-lg p-6 bg-blue-100 sticky top-4">
+              <div className="rounded-2xl shadow-lg p-6 bg-sky-100 border-2 border-black sticky top-4">
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-3xl font-bold text-center mb-4 text-blue-900">
+                  <h2 className="text-3xl font-bold text-center mb-4 text-sky-600">
                     Historia wizyt
                   </h2>
                 </div>

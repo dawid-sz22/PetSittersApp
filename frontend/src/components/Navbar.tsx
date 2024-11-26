@@ -23,7 +23,7 @@ function Navbar() {
         <li>
           <Link
             to={"/pet-sitters"}
-            className="text-white text-lg hover:underline rounded-lg px-3 py-1 font-bold"
+            className="text-white text-lg hover:cursor-pointer rounded-lg px-3 py-1 font-bold"
           >
             Opiekunowie
           </Link>
@@ -33,7 +33,7 @@ function Navbar() {
           <li>
             <Link
               to={"/pet-owner-profile"}
-              className="text-white text-lg hover:underline rounded-lg px-3 py-1 font-bold"
+              className="text-white text-lg hover:cursor-pointer rounded-lg px-3 py-1 font-bold"
             >
               Profil właściciela
             </Link>
@@ -43,7 +43,7 @@ function Navbar() {
           <li>
             <Link
               to={"/pet-sitter-profile"}
-              className="text-white text-lg hover:underline rounded-lg px-3 py-1 font-bold"
+              className="text-white text-lg hover:cursor-pointer rounded-lg px-3 py-1 font-bold"
             >
               Profil opiekuna
             </Link>
@@ -72,7 +72,7 @@ function Navbar() {
         {isLoggedIn() ? (
           <li className="relative">
             <Menu as="div" className="relative z-10">
-              <MenuButton className="text-white hover:underline py-1">
+              <MenuButton className="text-white hover:cursor-pointer py-1">
                 {localStorage.getItem("usernamePetSitter") ? (
                   <div className="flex items-center">
                     <div className="mr-2 font-bold text-lg">

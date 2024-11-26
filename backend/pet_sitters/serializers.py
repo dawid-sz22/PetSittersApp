@@ -234,3 +234,10 @@ class UserAuthorizedSerializer(serializers.ModelSerializer):
     
     def get_is_pet_owner(self, obj):
         return PetOwner.objects.filter(user=obj).exists()
+
+class GoogleOAuth2Serializer(serializers.Serializer):
+    code = serializers.CharField(required=False)
+    state = serializers.CharField(required=False)
+    error = serializers.CharField(required=False)
+
+

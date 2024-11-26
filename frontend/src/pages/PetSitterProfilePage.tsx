@@ -134,11 +134,11 @@ function PetSitterProfilePage() {
           <CircularProgress size={60} />
         </div>
       ) : (
-        <div className="container mx-auto mt-10 px-4">
+        <div className="mx-auto pt-10 px-4 bg-gradient-to-b from-sky-100 to-sky-300 min-h-screen">
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="w-full lg:w-1/2">
-              <div className="rounded-2xl shadow-lg border p-4 lg:p-6 bg-blue-100 mb-6 max-w-2xl mx-auto">
-                <h2 className="text-3xl font-bold text-blue-900 mb-4">
+              <div className="rounded-2xl shadow-lg border-2 border-black p-4 lg:p-6 bg-sky-100 mb-6 max-w-2xl mx-auto">
+                <h2 className="text-3xl font-bold text-sky-600 mb-4">
                   Dane opiekuna
                 </h2>
                 {petSitterDetails ? (
@@ -206,9 +206,9 @@ function PetSitterProfilePage() {
 
             {petSitterDetails && (
               <div className="w-full lg:w-1/2">
-                <div className="rounded-2xl shadow-lg p-4 lg:p-6 bg-blue-100 lg:sticky lg:top-4">
+                <div className="rounded-2xl shadow-lg p-4 lg:p-6 bg-sky-100 border-2 border-black lg:sticky lg:top-4">
                   <div className="flex flex-col gap-2">
-                    <h2 className="text-3xl font-bold text-center mb-4 text-blue-900">
+                    <h2 className="text-3xl font-bold text-center mb-4 text-sky-600">
                       Historia wizyt
                     </h2>
                   </div>

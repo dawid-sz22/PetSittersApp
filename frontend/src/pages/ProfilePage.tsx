@@ -58,8 +58,8 @@ function ProfilePage() {
         </div>
       ) : (
         <>
-          <div className="container mx-auto mt-10 px-4 flex gap-6">
-            <div className="rounded-2xl shadow-lg border p-4 bg-blue-100 w-1/2">
+          <div className="mx-auto pt-10 px-4 flex gap-6 bg-gradient-to-b from-sky-100 to-sky-300 min-h-screen">
+            <div className="rounded-2xl shadow-lg border-2 border-black p-4 bg-sky-100 w-1/2">
               <div className="flex flex-col justify-center items-center w-64 h-64 bg-white rounded-full overflow-hidden shadow-lg mx-auto border-2 border-black mb-4">
                 <img
                   src={userData?.profile_picture_url}
@@ -134,8 +134,8 @@ function ProfilePage() {
             </div>
 
             <div className="w-1/2 space-y-6">
-              <div className="rounded-2xl shadow-lg border p-6 bg-blue-100">
-                <h2 className="text-3xl font-bold text-blue-900 mb-4">
+              <div className="rounded-2xl shadow-lg border-2 border-black p-6 bg-sky-100">
+                <h2 className="text-3xl font-bold text-sky-600 mb-4">
                   Ustawienia konta
                 </h2>
                 <div className="space-y-2">
@@ -166,8 +166,8 @@ function ProfilePage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl shadow-lg border p-6 bg-blue-100">
-                <h2 className="text-3xl font-bold text-blue-900 mb-4">
+              <div className="rounded-2xl shadow-lg border-2 border-black p-6 bg-sky-100">
+                <h2 className="text-3xl font-bold text-sky-600 mb-4">
                   Profil właściciela zwierząt
                 </h2>
                 {userData?.is_pet_owner ? (
@@ -184,8 +184,8 @@ function ProfilePage() {
                 )}
               </div>
 
-              <div className="rounded-2xl shadow-lg border p-6 bg-blue-100">
-                <h2 className="text-3xl font-bold text-blue-900 mb-4">
+              <div className="rounded-2xl shadow-lg border-2 border-black p-6 bg-sky-100">
+                <h2 className="text-3xl font-bold text-sky-600 mb-4">
                   Profil opiekuna
                 </h2>
                 {userData?.is_pet_sitter ? (

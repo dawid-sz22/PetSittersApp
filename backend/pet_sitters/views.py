@@ -1,9 +1,11 @@
 from django.conf.global_settings import EMAIL_HOST_USER
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
+
+from pet_sitters.api import OauthServiceGoogle
 from .serializers import *
 from rest_framework import generics, status, mixins, authentication
 from rest_framework.response import Response
@@ -534,4 +536,53 @@ class GetSecretUploadUrl(generics.GenericAPIView):
         return Response({
             'upload_url': presigned_url
         }, status=status.HTTP_200_OK)
+
+class GoogleOAuth2RedirectView(generics.GenericAPIView):
+    permission_classes = []
+
+    def get(self, request:Request, *args, **kwargs):
+        oauth_service = OauthServiceGoogle()
+        authorization_url, state = oauth_service.get_authorization_url()
+        
+        request.session['oauth_state'] = state
+
+        return redirect(authorization_url)
     
+class GoogleOAuth2CallbackView(generics.GenericAPIView):
+    permission_classes = []
+    serializer_class = GoogleOAuth2Serializer
+
+    def get(self, request:Request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.query_params)
+        
+        serializer.is_valid(raise_exception=True)
+        
+        code = serializer.validated_data.get('code')
+        state = serializer.validated_data.get('state')
+        error = serializer.validated_data.get('error')
+        
+        if error:
+            return Response(data={"error": error}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not code:
+            return Response(data={"error": "Code is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not state:
+            return Response(data={"error": "State is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not request.session.get('oauth_state'):
+            return Response(data={"error": "State is missing"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        session_state = request.session.get('oauth_state')
+        del request.session['oauth_state']
+            
+        if session_state != state:
+            return Response(data={"error": "Invalid state"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        oauth_service = OauthServiceGoogle()
+        access_token, decoded_id_token = oauth_service.get_token(code)
+        
+        user_info = oauth_service.get_user_info(access_token)
+            
+        return Response(data={"access_token": access_token, "decoded_id_token": decoded_id_token, "user_info": user_info}, status=status.HTTP_200_OK)
+            

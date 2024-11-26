@@ -25,6 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
 
+# Google OAuth2
+GOOGLE_OAUTH2_CLIENT_ID = env("GOOGLE_OAUTH2_CLIENT_ID")
+GOOGLE_OAUTH2_CLIENT_SECRET = env("GOOGLE_OAUTH2_CLIENT_SECRET")
+GOOGLE_OAUTH2_PROJECT_ID = env("GOOGLE_OAUTH2_PROJECT_ID")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

@@ -15,7 +15,6 @@ function PetSittersListPage() {
   >();
   const [currentPage, setCurrentPage] = useState(1);
 
-  
   const itemsPerPage = 3;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -96,63 +95,65 @@ function PetSittersListPage() {
         </div>
       ) : (
         <>
-          <div className="bg-gradient-to-b from-blue-100 to-blue-300 ">
-          <div className="flex justify-center items-center py-10">
-            <input
-              type="search"
-              id="search-dropdown"
-              className="block p-3 text-l text-black bg-gray-50 rounded-lg border-xl border-black border-s-2 border w-72"
-              placeholder="Szukaj"
-              onChange={(e) => handleSearch(e.target.value)}
-              required
-            />
-            <button
-              type="submit"
-              className="top-0 end-0 p-3.5 mx-1 text-sm font-medium h-full text-white bg-blue-700 rounded-lg border border-blue-700 "
-            >
-              <svg
-                className="w-4 h-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
+          <div className="bg-gradient-to-b from-sky-100 to-sky-300 min-h-screen">
+            <div className="flex justify-center items-center py-10">
+              <input
+                type="search"
+                id="search-dropdown"
+                className="block p-3 text-l text-black bg-gray-50 rounded-lg border-xl border-black border-s-2 border w-72"
+                placeholder="Szukaj"
+                onChange={(e) => handleSearch(e.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                className="top-0 end-0 p-3.5 mx-1 text-sm font-medium h-full text-white bg-blue-700 rounded-lg border border-blue-700 "
               >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
-              <span className="sr-only">Search</span>
-            </button>
-          </div>
+                <svg
+                  className="w-4 h-4"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+                <span className="sr-only">Search</span>
+              </button>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {currentItems?.map((sitter) => (
-              <PetSitterComponent key={sitter.id} {...sitter} />
-            ))}
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {currentItems?.map((sitter) => (
+                <>
+                  <PetSitterComponent key={sitter.id} {...sitter} />
+                </>
+              ))}
+            </div>
 
-          <div className="flex justify-center gap-2 my-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-blue-700 text-white rounded-lg disabled:bg-gray-400"
-            >
-              Previous
-            </button>
-            <span className="px-4 py-2">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-blue-700 text-white rounded-lg disabled:bg-gray-400"
-            >
-              Next
-            </button>
+            <div className="flex justify-center gap-2 py-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-blue-700 text-white rounded-lg disabled:bg-gray-400"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-blue-700 text-white rounded-lg disabled:bg-gray-400"
+              >
+                Next
+              </button>
             </div>
           </div>
         </>
