@@ -21,6 +21,7 @@ from botocore.config import Config
 import os
 import uuid
 import datetime
+from django.conf import settings
 
 my_config = Config(
     region_name='us-east-2',
@@ -37,6 +38,9 @@ class SignUpUser(generics.GenericAPIView):
 
     def post(self, request:Request):
         data = request.data
+        
+        if data.get('access_token_google'):
+            self.serializer_class = SignUpGoogleSerializer
         
         serializer = self.serializer_class(data=data)
 
@@ -59,6 +63,10 @@ class LoginView(APIView):
     def post(self, request:Request):
         email = request.data.get('email')
         password = request.data.get('password')
+        
+        user = User.objects.filter(email=email).first()
+        if user and user.google_id:
+            return Response(data={"message" : "You must login by Google account"}, status=status.HTTP_401_UNAUTHORIZED)
 
         user=authenticate(email=email,password=password)
 
@@ -73,14 +81,6 @@ class LoginView(APIView):
         else:
             return Response(data={"message" : "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
         
-
-    def get(self, request:Request):
-        content = {
-            "user": str(request.user),
-            "auth": str(request.auth)
-        }
-
-        return Response(data=content, status=status.HTTP_200_OK)
     
 class RequestPasswordResetEmail(generics.GenericAPIView):
     permission_classes = []
@@ -547,7 +547,7 @@ class GoogleOAuth2RedirectView(generics.GenericAPIView):
         request.session['oauth_state'] = state
 
         return redirect(authorization_url)
-    
+
 class GoogleOAuth2CallbackView(generics.GenericAPIView):
     permission_classes = []
     serializer_class = GoogleOAuth2Serializer
@@ -571,7 +571,7 @@ class GoogleOAuth2CallbackView(generics.GenericAPIView):
             return Response(data={"error": "State is required"}, status=status.HTTP_400_BAD_REQUEST)
         
         if not request.session.get('oauth_state'):
-            return Response(data={"error": "State is missing"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"error": "State from session is missing"}, status=status.HTTP_400_BAD_REQUEST)
         
         session_state = request.session.get('oauth_state')
         del request.session['oauth_state']
@@ -582,7 +582,25 @@ class GoogleOAuth2CallbackView(generics.GenericAPIView):
         oauth_service = OauthServiceGoogle()
         access_token, decoded_id_token = oauth_service.get_token(code)
         
-        user_info = oauth_service.get_user_info(access_token)
+        founded_user = User.objects.filter(email=decoded_id_token.get('email')).first()
+        
+        # login user
+        if founded_user:
+            # Check if google_id is different (existing user with different google account or new user with same email)
+            if founded_user.google_id != decoded_id_token.get('sub'):
+                return redirect(f"{settings.FRONTEND_URL_LOGIN}?error=User with this email already exists")
             
-        return Response(data={"access_token": access_token, "decoded_id_token": decoded_id_token, "user_info": user_info}, status=status.HTTP_200_OK)
-            
+            return redirect(f"{settings.FRONTEND_URL_LOGIN}?token={founded_user.auth_token.key}&user_id={founded_user.id}&username={founded_user.username}")
+
+
+        query_params = f"access_token={access_token}"
+        if decoded_id_token.get('email'):
+            query_params += f"&email={decoded_id_token.get('email')}"
+        if decoded_id_token.get('given_name'):
+            query_params += f"&firstName={decoded_id_token.get('given_name')}"
+        if decoded_id_token.get('family_name'):
+            query_params += f"&lastName={decoded_id_token.get('family_name')}"
+        if decoded_id_token.get('sub'):
+            query_params += f"&google_id={decoded_id_token.get('sub')}"
+        
+        return redirect(f"{settings.FRONTEND_URL_REGISTER}?{query_params}")

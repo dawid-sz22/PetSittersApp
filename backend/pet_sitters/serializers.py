@@ -7,6 +7,8 @@ from rest_framework.authtoken.models import Token
 from psycopg2.extras import DateTimeRange
 from drf_extra_fields.fields import DateTimeRangeField
 from rest_framework.serializers import SerializerMethodField
+from pet_sitters.api import OauthServiceGoogle
+
 
 class SignUpSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=80)
@@ -35,6 +37,66 @@ class SignUpSerializer(serializers.ModelSerializer):
 
         user = super().create(validated_data)
         user.set_password(password)
+        user.save()
+
+        Token.objects.create(user=user)
+        
+        return user
+
+class SignUpGoogleSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=45)
+    date_of_birth = serializers.DateField(input_formats=['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y'])
+    access_token_google = serializers.CharField(max_length=255, write_only=True, required=True)
+    
+    class Meta:
+        model = User
+        fields = ['username', 'date_of_birth', 'first_name', 'last_name',
+                  'phone_number', 'address_city', 'address_street', 'address_house', 'access_token_google']
+    
+    def validate(self, attrs):
+        email_check_copy = User.objects.filter(email=self.get_email(attrs)).exists()
+        username_check_copy = User.objects.filter(username=attrs['username']).exists()
+        
+        if email_check_copy:
+            raise ValidationError("Email has been already used")
+        if username_check_copy:
+            raise ValidationError("Username has been already used")
+
+        return super().validate(attrs)
+    
+    def user_data(self, obj):
+        access_token_google = obj.get('access_token_google')
+        if access_token_google:
+            try:
+                service = OauthServiceGoogle()
+                user_data = service._get_user_info(access_token_google)
+                return user_data
+            except:
+                raise ValidationError("Invalid access token user data")
+        return None
+    
+    def get_email(self, obj):
+        try:
+            user_data = self.user_data(obj)
+            return user_data.get('email')
+        except:
+            raise ValidationError("Invalid access token")
+        
+    def get_google_id(self, obj):
+        try:
+            user_data = self.user_data(obj)
+            return user_data.get('sub')
+        except:
+            raise ValidationError("Invalid access token")
+    
+    def create(self, validated_data):
+        user_data = self.user_data(validated_data)
+        
+        validated_data['email'] = user_data.get('email')
+        validated_data['google_id'] = user_data.get('sub')
+        validated_data.pop("access_token_google")
+        
+        user = super().create(validated_data)
         user.save()
 
         Token.objects.create(user=user)
@@ -79,7 +141,6 @@ class PetSitterSerializer(serializers.ModelSerializer):
         visits_count = 0
         for visit in visits.filter(rating__isnull=False):
             visits_rating += visit.rating
-            print(visits_count)
             visits_count += 1
         
         if visits_count > 0:
@@ -100,7 +161,6 @@ class PetSitterWithoutVisitsSerializer(serializers.ModelSerializer):
         visits_count = 0
         for visit in visits.filter(rating__isnull=False):
             visits_rating += visit.rating
-            print(visits_count)
             visits_count += 1
         if visits_count > 0:
             return int(visits_rating / visits_count)

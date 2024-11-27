@@ -23,6 +23,6 @@ urlpatterns =[
     path("visit/", views.VisitListCreateView.as_view(), name="VisitListCreateView"),
     path("visit/<int:pk>/", views.VisitGetDeletePatchView.as_view(), name="VisitGetDeletePatchView"),
     path("upload_url/", views.GetSecretUploadUrl.as_view(), name="GetSecretUploadUrl"),
-    path("google_oauth2_redirect/", views.GoogleOAuth2RedirectView.as_view(), name="google-oauth2-redirect"),
-    path("google-oauth2/callback", views.GoogleOAuth2CallbackView.as_view(), name="google-oauth2-callback"),
+    path("google_oauth2/redirect/", views.GoogleOAuth2RedirectView.as_view(), name="google-oauth2-redirect"),
+    path("google_oauth2/callback/", views.GoogleOAuth2CallbackView.as_view(), name="google-oauth2-callback"),
 ]

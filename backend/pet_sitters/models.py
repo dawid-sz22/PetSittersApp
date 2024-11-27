@@ -47,7 +47,7 @@ class User(AbstractUser):
     profile_picture_url = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    google_id = models.CharField(max_length=100, null=True)
     objects = CustomUserManager()
 
     USERNAME_FIELD = "email"

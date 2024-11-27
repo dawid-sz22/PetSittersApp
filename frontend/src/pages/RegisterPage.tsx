@@ -6,6 +6,7 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import * as React from "react";
 import { CircularProgress } from "@mui/material";
 import Navbar from "../components/Navbar.tsx";
+import { useSearchParams } from "react-router-dom";
 
 function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -23,6 +24,18 @@ function RegisterPage() {
   const [addressNumber, setAddressNumber] = useState("");
   const [errorRegister, setErrorRegister] = useState("");
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [access_token_google, setAccessTokenGoogle] = useState<string | null>(
+    null
+  );
+
+  useEffect(() => {
+    setEmail(searchParams.get("email") || "");
+    setUsername(searchParams.get("username") || "");
+    setFirstName(searchParams.get("firstName") || "");
+    setLastName(searchParams.get("lastName") || "");
+    setAccessTokenGoogle(searchParams.get("access_token") || null);
+  }, [searchParams]);
 
   useEffect(() => {
     const handlePasswordChange = () => {
@@ -82,6 +95,7 @@ function RegisterPage() {
           address_city: addressCity,
           address_street: addressStreet,
           address_number: addressNumber,
+          access_token_google: access_token_google,
         });
       }
     } catch (e) {
@@ -117,6 +131,7 @@ function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              disabled={access_token_google != null}
               required
             />
           </label>
@@ -150,26 +165,31 @@ function RegisterPage() {
               required
             />
           </label>
-          <label className="block mb-4">
-            <span className="text-gray-700">*Hasło:</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </label>
-          <label className="block mb-4">
-            <span className="text-gray-700">*Powtórz hasło:</span>
-            <input
-              type="password"
-              value={repeatPassword}
-              onChange={handleRepeatPasswordChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </label>
+          {access_token_google == null && (
+            <>
+              <label className="block mb-4">
+                <span className="text-gray-700">*Hasło:</span>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  disabled={access_token_google != null}
+                  required
+                />
+              </label>
+              <label className="block mb-4">
+                <span className="text-gray-700">*Powtórz hasło:</span>
+                <input
+                  type="password"
+                  value={repeatPassword}
+                  onChange={handleRepeatPasswordChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </label>
+            </>
+          )}
           {passwordError && (
             <p className="text-red-500 text-sm mb-4">{passwordError}</p>
           )}

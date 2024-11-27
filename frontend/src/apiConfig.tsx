@@ -34,13 +34,15 @@ export const handleLoginAPI = async (email: string, password: string) => {
     localStorage.setItem("tokenPetSitter", token);
     localStorage.setItem("usernamePetSitter", response.data.username);
     localStorage.setItem("userIDPetSitter", response.data.user_id);
-    localStorage.setItem("isPetSitter", response.data.is_pet_sitter);
-    localStorage.setItem("isPetOwner", response.data.is_pet_owner);
     window.location.href = "/";
   } catch (e) {
     console.log(e);
     throw e;
   }
+};
+
+export const getGoogleOAuth2RedirectURL = (): string => {
+  return `${API_URL}/google_oauth2/redirect/`;
 };
 
 export const isLoggedIn = () => {
@@ -79,6 +81,7 @@ export const handleRegisterAPI = async ({
   address_city,
   address_street,
   address_number,
+  access_token_google,
 }: registerArguments) => {
   try {
     await axios.post(`${API_URL}/register/`, {
@@ -92,8 +95,8 @@ export const handleRegisterAPI = async ({
       address_city: address_city,
       address_street: address_street,
       address_number: address_number,
+      access_token_google: access_token_google,
     });
-    // window.location.href = "/login/";
   } catch (e) {
     // Check all possible errors
     if (axios.isAxiosError(e) && e.response && e.response.data.errors) {

@@ -18,6 +18,9 @@ environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+FRONTEND_URL = "http://localhost:5173"
+FRONTEND_URL_REGISTER = "http://localhost:5173/register/"
+FRONTEND_URL_LOGIN = "http://localhost:5173/login"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/

@@ -1,13 +1,33 @@
-import { handleLoginAPI } from "../apiConfig.tsx";
+import { handleLoginAPI, getGoogleOAuth2RedirectURL } from "../apiConfig.tsx";
 import * as React from "react";
 import { CircularProgress } from "@mui/material";
 import Navbar from "../components/Navbar.tsx";
+import { toast, ToastContainer } from "react-toastify";
+import { useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
 
 function LoginPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [errorLogin, setErrorLogin] = React.useState("");
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const error = searchParams.get("error");
+    const token = searchParams.get("token");
+    const user_id = searchParams.get("user_id");
+    const username = searchParams.get("username");
+    if (error) {
+      toast.error(error);
+    }
+    if (token && user_id && username) {
+      localStorage.setItem("tokenPetSitter", token);
+      localStorage.setItem("userIDPetSitter", user_id);
+      localStorage.setItem("usernamePetSitter", username);
+      window.location.href = "/";
+    }
+  }, [searchParams]);
 
   const handleSubmitLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,9 +50,22 @@ function LoginPage() {
     return;
   };
 
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      const url_redirect = getGoogleOAuth2RedirectURL();
+      window.location.href = url_redirect;
+    } catch (e) {
+      setErrorLogin("Wystąpił błąd podczas logowania przez Google");
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Navbar />
+      <ToastContainer />
       <div className="flex justify-center items-center min-h-screen py-10 bg-[url('./assets/bg_register.jpg')] bg-cover">
         <form
           onSubmit={handleSubmitLogin}
@@ -110,16 +143,18 @@ function LoginPage() {
             </div>
 
             <div className="mt-6 flex justify-center">
-              <a
-                href="#"
-                className="p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              <button
+                onClick={handleGoogleLogin}
+                className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-2"
+                type="button"
               >
                 <img
                   className="h-6 w-6"
                   src="https://www.svgrepo.com/show/506498/google.svg"
                   alt="Google"
                 />
-              </a>
+                <span>Zaloguj przez Google</span>
+              </button>
             </div>
           </div>
         </form>

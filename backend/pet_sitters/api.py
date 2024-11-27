@@ -27,7 +27,6 @@ class OauthServiceGoogle:
     def _get_redirect_uri(self):
         domain = "http://127.0.0.1:8000"
         redirect_uri = f"{domain}{self.API_URI}"
-        print(redirect_uri)
         return redirect_uri
 
     def get_authorization_url(self):
@@ -70,8 +69,9 @@ class OauthServiceGoogle:
         
         return access_token, decoded_id_token
     
-    def get_user_info(self, access_token:str):
-        response = requests.get(self.GOOGLE_USER_INFO_URL, params={"access_token": access_token})
+    @staticmethod
+    def _get_user_info(access_token:str):
+        response = requests.get(OauthServiceGoogle.GOOGLE_USER_INFO_URL, params={"access_token": access_token})
         
         if not response.ok:
             raise Exception(f"Failed to get user info: {response.text}")

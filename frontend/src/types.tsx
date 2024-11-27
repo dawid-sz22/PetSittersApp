@@ -9,6 +9,7 @@ export type registerArguments = {
   address_city: string;
   address_street: string;
   address_number: string;
+  access_token_google: string | null;
 };
 
 export type PetSpecies = {
@@ -149,3 +150,9 @@ export type CreateVisitRequest = {
   price: number;
   services: number[]; // array of service IDs
 };
+
+export type GoogleOAuth2RedirectResponse = {
+  authorization_url: string;
+  state: string;
+};
+
