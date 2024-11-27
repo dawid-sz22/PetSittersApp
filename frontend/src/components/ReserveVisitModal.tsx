@@ -78,6 +78,15 @@ function ReserveVisitModal({
         price: totalCost,
         services: [selectedService.id],
       });
+      toast.success("Wizyta została zarezerwowana", {
+        position: "top-center",
+        autoClose: 3000,
+        style: {
+          fontSize: "1.2rem",
+          fontWeight: "bold",
+          width: "100%",
+        },
+      });
       onClose();
     } catch (error) {
       toast.error("Nie udało się zarezerwować wizyty", {

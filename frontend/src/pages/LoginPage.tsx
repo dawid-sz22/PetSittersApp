@@ -18,13 +18,17 @@ function LoginPage() {
     const token = searchParams.get("token");
     const user_id = searchParams.get("user_id");
     const username = searchParams.get("username");
+    const is_pet_sitter = searchParams.get("is_pet_sitter");
+    const is_pet_owner = searchParams.get("is_pet_owner");
     if (error) {
       toast.error(error);
     }
-    if (token && user_id && username) {
+    if (token && user_id && username && is_pet_sitter && is_pet_owner) {
       localStorage.setItem("tokenPetSitter", token);
       localStorage.setItem("userIDPetSitter", user_id);
       localStorage.setItem("usernamePetSitter", username);
+      localStorage.setItem("isPetSitter", is_pet_sitter.toLowerCase());
+      localStorage.setItem("isPetOwner", is_pet_owner.toLowerCase());
       window.location.href = "/";
     }
   }, [searchParams]);
@@ -66,12 +70,12 @@ function LoginPage() {
     <>
       <Navbar />
       <ToastContainer />
-      <div className="flex justify-center items-center min-h-screen py-10 bg-[url('./assets/bg_register.jpg')] bg-cover">
+      <div className="flex justify-center items-center min-h-screen py-10 bg-[url('./assets/bg_register.jpg')] bg-cover bg-fixed">
         <form
           onSubmit={handleSubmitLogin}
           className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md"
         >
-          <h1 className="text-center text-2xl font-semibold text-blue-500 mb-6">
+          <h1 className="text-center text-2xl font-bold text-blue-500 mb-6">
             Zaloguj się
           </h1>
 
@@ -137,7 +141,7 @@ function LoginPage() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
-                  lub skorzystaj z
+                  lub
                 </span>
               </div>
             </div>
@@ -153,7 +157,9 @@ function LoginPage() {
                   src="https://www.svgrepo.com/show/506498/google.svg"
                   alt="Google"
                 />
-                <span>Zaloguj przez Google</span>
+                <span className="text-m font-semibold">
+                  Zaloguj przez Google
+                </span>
               </button>
             </div>
           </div>

@@ -121,8 +121,10 @@ function PetSitterProfilePage() {
   });
 
 
-  if (errorFetching) {
-    return <ErrorFetching error={errorFetching} />;
+  if (errorFetching || localStorage.getItem("isPetSitter") === "false") {
+    return (
+      <ErrorFetching error={errorFetching || "Nie jesteś opiekunem"} />
+    );
   }
 
   return (
@@ -281,11 +283,19 @@ function PetSitterProfilePage() {
                           >
                             <div className="flex items-start border-b border-gray-300 pb-3 gap-4 mb-4">
                               <div className="flex-shrink-0">
-                                <img
-                                  src={visit.pet_data.photo_URL}
-                                  alt={`${visit.pet_data.name}'s photo`}
-                                  className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
-                                />
+                                {visit.pet_data.photo_URL ? (
+                                  <img
+                                    src={visit.pet_data.photo_URL}
+                                    alt={`${visit.pet_data.name}'s photo`}
+                                    className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
+                                  />
+                                ) : (
+                                  <img
+                                    src={"./images.png"}
+                                    className="w-1/2 h-1/2 object-cover"
+                                    alt={`${visit.pet_data.name}'s photo`}
+                                  />
+                                )}
                               </div>
                               <div className="flex flex-col flex-grow">
                                 <div className="flex justify-between items-center">
@@ -341,15 +351,23 @@ function PetSitterProfilePage() {
 
                             <div className="flex flex-col gap-2">
                               <div className="flex items-center justify-start gap-4">
-                                <div className="flex-shrink-0">
-                                  <img
-                                    src={
-                                      visit.pet_data.pet_owner_data.user_data
+                                <div className="flex items-center justify-center w-24 h-24">
+                                  {visit.pet_data.pet_owner_data.user_data.profile_picture_url ? (
+                                    <img
+                                      src={
+                                        visit.pet_data.pet_owner_data.user_data
                                         .profile_picture_url
                                     }
                                     alt={`${visit.pet_data.pet_owner_data.user_data.first_name}'s photo`}
-                                    className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
-                                  />
+                                      className="rounded-full object-cover border-2 border-blue-200"
+                                    />
+                                  ) : (
+                                    <img
+                                      src={"./images.png"}
+                                      className="w-1/2 h-1/2 object-cover"
+                                      alt={`${visit.pet_data.pet_owner_data.user_data.first_name}'s photo`}
+                                    />
+                                  )}
                                 </div>
                                 <div className="flex flex-row flex-grow justify-between">
                                   <div>
@@ -469,7 +487,11 @@ function PetSitterProfilePage() {
           />
           <DeletePetSitterModal
             isOpen={showDeletePetSitterModal}
-            onClose={() => setShowDeletePetSitterModal(false)}
+            onClose={() => {
+              setShowDeletePetSitterModal(false);
+              localStorage.setItem("isPetSitter", "false");
+              window.location.href = "/";
+            }}
           />
         </div>
       )}

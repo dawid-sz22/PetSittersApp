@@ -10,6 +10,8 @@ import { EmailModal } from "../components/modals/EmailModal";
 import { ProfileModal } from "../components/modals/ProfileModal";
 import { AddressModal } from "../components/modals/AddressModal";
 import { DeleteUserModal } from "../components/modals/DeleteUserModal";
+import { NoImage } from "../assets/NoImage";
+import { CreatePetOwnerModal } from "../components/modals/CreatePetOwnerModal";
 
 function ProfilePage() {
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -21,7 +23,7 @@ function ProfilePage() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
-
+  const [showCreatePetOwnerModal, setShowCreatePetOwnerModal] = useState(false);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -44,6 +46,7 @@ function ProfilePage() {
     window.location.href = "/create-pet-sitter";
   };
 
+
   if (errorFetching) {
     return <ErrorFetching error={errorFetching} />;
   }
@@ -61,11 +64,19 @@ function ProfilePage() {
           <div className="mx-auto pt-10 px-4 flex gap-6 bg-gradient-to-b from-sky-100 to-sky-300 min-h-screen">
             <div className="rounded-2xl shadow-lg border-2 border-black p-4 bg-sky-100 w-1/2">
               <div className="flex flex-col justify-center items-center w-64 h-64 bg-white rounded-full overflow-hidden shadow-lg mx-auto border-2 border-black mb-4">
-                <img
-                  src={userData?.profile_picture_url}
-                  className="w-full h-full object-cover"
-                  alt="Profile picture"
-                />
+                {userData?.profile_picture_url ? (
+                  <img
+                    src={userData?.profile_picture_url}
+                    className="w-full h-full object-cover"
+                    alt="Profile picture"
+                  />
+                ) : (
+                  <img
+                    src={"./images.png"}
+                    className="w-1/2 h-1/2 object-cover"
+                    alt="Profile picture"
+                  />
+                )}
               </div>
 
               <div className="grid grid-cols-1 gap-3 mb-4">
@@ -178,9 +189,12 @@ function ProfilePage() {
                     Przejdź do profilu właściciela
                   </button>
                 ) : (
-                  <p className="text-center text-gray-500 py-2">
-                    Nie masz jeszcze profilu właściciela zwierząt
-                  </p>
+                  <button
+                    className="w-full bg-green-700 text-white rounded-lg px-4 py-2 hover:bg-green-800"
+                    onClick={() => setShowCreatePetOwnerModal(true)}
+                  >
+                    Zostań właścicielem zwierząt
+                  </button>
                 )}
               </div>
 
@@ -211,6 +225,7 @@ function ProfilePage() {
           <ProfileModal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} />
           <AddressModal isOpen={showAddressModal} onClose={() => setShowAddressModal(false)} />
           <DeleteUserModal isOpen={showDeleteUserModal} onClose={() => setShowDeleteUserModal(false)} />
+          <CreatePetOwnerModal isOpen={showCreatePetOwnerModal} onClose={() => setShowCreatePetOwnerModal(false)} />
         </>
       )}
     </>

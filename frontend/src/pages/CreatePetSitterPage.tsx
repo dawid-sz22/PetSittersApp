@@ -49,30 +49,16 @@ function CreatePetSitterPage() {
     <>
       <Navbar />
       <ToastContainer />
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gradient-to-b from-sky-100 to-sky-300 pt-10">
         <div className="container mx-auto py-12 px-6">
-          <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
-            <h2 className="text-2xl font-bold text-center mb-8">
+          <div className="max-w-md mx-auto bg-sky-100 rounded-2xl shadow-lg border-2 border-black p-8">
+            <h2 className="text-2xl font-bold text-center mb-8 text-sky-600">
               Zostań opiekunem zwierząt
             </h2>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Zdjęcie profilowe
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    setData({ ...data, photo_URL: e.target.value })
-                  }
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div> */}
-
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-m font-medium text-gray-700">
                   Doświadczenie (w miesiącach)
                 </label>
                 <input
@@ -90,7 +76,7 @@ function CreatePetSitterPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-m font-medium text-gray-700">
                   Stawka dzienna (PLN)
                 </label>
                 <input
@@ -106,7 +92,7 @@ function CreatePetSitterPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-m font-medium text-gray-700">
                   Stawka godzinowa (PLN)
                 </label>
                 <input
@@ -122,7 +108,7 @@ function CreatePetSitterPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-m font-medium text-gray-700">
                   Opis / Bio
                 </label>
                 <textarea

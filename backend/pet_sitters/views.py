@@ -75,7 +75,9 @@ class LoginView(APIView):
                 "message":"Success",
                 "token":user.auth_token.key,
                 "username": user.username,
-                "user_id": user.id
+                "user_id": user.id,
+                "is_pet_sitter": PetSitter.objects.filter(user=user).exists(),
+                "is_pet_owner": PetOwner.objects.filter(user=user).exists()
             }
             return Response(data=response, status=status.HTTP_200_OK)
         else:
@@ -590,7 +592,10 @@ class GoogleOAuth2CallbackView(generics.GenericAPIView):
             if founded_user.google_id != decoded_id_token.get('sub'):
                 return redirect(f"{settings.FRONTEND_URL_LOGIN}?error=User with this email already exists")
             
-            return redirect(f"{settings.FRONTEND_URL_LOGIN}?token={founded_user.auth_token.key}&user_id={founded_user.id}&username={founded_user.username}")
+            is_pet_sitter = PetSitter.objects.filter(user=founded_user).exists()
+            is_pet_owner = PetOwner.objects.filter(user=founded_user).exists()
+            
+            return redirect(f"{settings.FRONTEND_URL_LOGIN}?token={founded_user.auth_token.key}&user_id={founded_user.id}&username={founded_user.username}&is_pet_sitter={is_pet_sitter}&is_pet_owner={is_pet_owner}")
 
 
         query_params = f"access_token={access_token}"

@@ -2,7 +2,11 @@ import { PetSitterDetailsType, Visit, Service } from "../types.tsx";
 import Pin from "../assets/Pin.tsx";
 import { PawIcon } from "../assets/PawIcon.tsx";
 import { useParams } from "react-router-dom";
-import { getAllServicesAPI, getPetSitterDetailsAPI, getUserPetSitterAPI } from "../apiConfig.tsx";
+import {
+  getAllServicesAPI,
+  getPetSitterDetailsAPI,
+  getUserPetSitterAPI,
+} from "../apiConfig.tsx";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "./ErrorFetching.tsx";
@@ -68,7 +72,9 @@ function PetSitterDetails() {
     }
   };
 
-  const completedVisits = visits.filter(visit => visit.is_over && visit.is_accepted);
+  const completedVisits = visits.filter(
+    (visit) => visit.is_over && visit.is_accepted
+  );
 
   if (isLoading) {
     return (
@@ -90,16 +96,24 @@ function PetSitterDetails() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between mt-6">
+      <div className="bg-gradient-to-b from-sky-100 to-sky-300 min-h-screen flex flex-col md:flex-row justify-between pt-6">
         {/* Left side - Pet Sitter Info */}
-        <div className="md:w-1/3">
-          <div className="rounded-2xl shadow-lg border p-6 bg-blue-100">
+        <div className="md:w-1/3 mx-auto">
+          <div className="rounded-2xl shadow-lg border-2 border-black p-6 bg-sky-100">
             <div className="flex flex-col justify-center items-center w-48 h-48 bg-white rounded-full overflow-hidden shadow-lg mx-auto border-2 border-black">
-              <img
-                src={petSitterDetails?.user_data.profile_picture_url}
-                className="w-full h-full object-cover"
-                alt={`${petSitterDetails?.user_data.first_name}'s profile`}
-              />
+              {petSitterDetails?.user_data.profile_picture_url ? (
+                <img
+                  src={petSitterDetails?.user_data.profile_picture_url}
+                  className="w-full h-full object-cover"
+                  alt={`${petSitterDetails?.user_data.first_name}'s profile`}
+                />
+              ) : (
+                <img
+                  src={"./images.png"}
+                  className="w-1/2 h-1/2 object-cover"
+                  alt={`${petSitterDetails?.user_data.first_name}'s profile`}
+                />
+              )}
             </div>
             <div className="flex flex-row text-center justify-between mb-4 mx-auto">
               <div className="">
@@ -112,7 +126,9 @@ function PetSitterDetails() {
                 </p>
               </div>
               <div className="flex flex-row text-sm top-0 right-0 mx-4 space-x-4 text-black items-center justify-center border rounded-full bg-black w-28 h-12">
-                <span className="text-yellow-400 font-bold text-lg">{petSitterDetails?.rating}/5</span>
+                <span className="text-yellow-400 font-bold text-lg">
+                  {petSitterDetails?.rating}/5
+                </span>
                 <div className="text-yellow-400 text-sm mx-3.5">
                   <PawIcon height={"24"} width={"24"} />
                 </div>
@@ -170,9 +186,9 @@ function PetSitterDetails() {
         </div>
 
         {/* Right side - Completed Visits History */}
-        <div className="md:w-1/2">
-          <div className="rounded-2xl shadow-lg border p-6 bg-blue-100">
-            <h2 className="text-xl font-bold mb-4 text-center">
+        <div className="md:w-1/2 mx-auto">
+          <div className="rounded-2xl shadow-lg border-2 border-black p-6 bg-sky-100">
+            <h2 className="text-3xl font-bold text-center mb-4 text-sky-600">
               Historia Wizyt
             </h2>
             {visitsError ? (
@@ -189,28 +205,59 @@ function PetSitterDetails() {
                     >
                       <div className="flex items-start border-b border-gray-300 pb-3 gap-4 mb-4">
                         <div className="flex-shrink-0">
-                          <img
-                            src={visit.pet_data.photo_URL}
-                            alt={`${visit.pet_data.name}'s photo`}
-                            className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
-                          />
+                          {visit.pet_data.photo_URL ? (
+                            <img
+                              src={visit.pet_data.photo_URL}
+                              alt={`${visit.pet_data.name}'s photo`}
+                              className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
+                            />
+                          ) : (
+                            <img
+                              src={"./images.png"}
+                              className="w-1/2 h-1/2 object-cover"
+                              alt={`${visit.pet_data.name}'s photo`}
+                            />
+                          )}
                         </div>
                         <div className="flex flex-col flex-grow">
                           <div className="flex justify-between items-center">
                             <div>
-                              <h3 className="text-xl font-semibold text-blue-900">
+                              <h3 className="text-xl font-semibold mb-1 text-blue-900">
                                 {visit.pet_data.name}
                               </h3>
-                              <span className="text-m text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                              <span className="text-m text-blue-800 bg-sky-200 px-3 mr-3 py-1 rounded-full">
                                 {visit.pet_data.species_data.name}
+                              </span>
+                              <span className="text-m text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                                {visit.pet_data.breed}
+                              </span>
+                              <span className="text-m text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                                {visit.pet_data.weight} kg
+                              </span>
+                              <span className="text-m text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                                {visit.pet_data.age} lat
+                              </span>
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-semibold mb-1 text-blue-900">
+                                Usługa:
+                              </h3>
+                              <span className="text-m text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                                {visit.services_data[0].name}
                               </span>
                             </div>
                             <div className="flex flex-col gap-2">
                               <span className="text-black border border-black text-m rounded-xl px-2 py-1">
-                                od {new Date(visit.date_range_of_visit.lower).toLocaleString()}
+                                od{" "}
+                                {new Date(
+                                  visit.date_range_of_visit.lower
+                                ).toLocaleString()}
                               </span>
                               <span className="text-black border border-black text-m rounded-xl px-2 py-1">
-                                do {new Date(visit.date_range_of_visit.upper).toLocaleString()}
+                                do{" "}
+                                {new Date(
+                                  visit.date_range_of_visit.upper
+                                ).toLocaleString()}
                               </span>
                             </div>
                           </div>
@@ -219,18 +266,39 @@ function PetSitterDetails() {
                           <div className="mt-4">
                             <h4 className="font-semibold">Właściciel:</h4>
                             <div className="flex items-center gap-4 mt-2">
-                              <img
-                                src={visit.pet_data.pet_owner_data.user_data.profile_picture_url}
-                                alt="Pet owner"
-                                className="w-16 h-16 rounded-full object-cover border-2 border-blue-200"
-                              />
+                              {visit.pet_data.pet_owner_data.user_data
+                                .profile_picture_url ? (
+                                <img
+                                  src={
+                                    visit.pet_data.pet_owner_data.user_data
+                                      .profile_picture_url
+                                  }
+                                  alt="Pet owner"
+                                  className="w-16 h-16 rounded-full object-cover border-2 border-blue-200"
+                                />
+                              ) : (
+                                <img
+                                  src={"./images.png"}
+                                  className="w-16 h-16 rounded-full object-cover border-2 border-blue-200"
+                                  alt="Pet owner"
+                                />
+                              )}
                               <div>
                                 <p className="font-semibold">
-                                  {visit.pet_data.pet_owner_data.user_data.first_name}{' '}
-                                  {visit.pet_data.pet_owner_data.user_data.last_name}
+                                  {
+                                    visit.pet_data.pet_owner_data.user_data
+                                      .first_name
+                                  }{" "}
+                                  {
+                                    visit.pet_data.pet_owner_data.user_data
+                                      .last_name
+                                  }
                                 </p>
                                 <p className="text-gray-600">
-                                  {visit.pet_data.pet_owner_data.user_data.email}
+                                  {
+                                    visit.pet_data.pet_owner_data.user_data
+                                      .email
+                                  }
                                 </p>
                               </div>
                             </div>
@@ -245,14 +313,31 @@ function PetSitterDetails() {
                                   <div className="flex items-center">
                                     <span className="text-yellow-500 flex">
                                       {[...Array(visit.rating)].map((_, i) => (
-                                        <PawIcon key={i} width="24" height="24" />
+                                        <PawIcon
+                                          key={i}
+                                          width="24"
+                                          height="24"
+                                        />
                                       ))}
+                                    </span>
+                                    <span className="text-gray-500 flex">
+                                      {[...Array(5 - visit.rating)].map(
+                                        (_, i) => (
+                                          <PawIcon
+                                            key={i}
+                                            width="24"
+                                            height="24"
+                                          />
+                                        )
+                                      )}
                                     </span>
                                   </div>
                                 )}
                               </div>
                               {visit.review && (
-                                <p className="mt-2 text-gray-600">{visit.review}</p>
+                                <p className="mt-2 text-gray-600">
+                                  {visit.review}
+                                </p>
                               )}
                             </div>
                           )}

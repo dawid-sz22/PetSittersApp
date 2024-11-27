@@ -11,11 +11,19 @@ function PetSitterComponent({
     <>
       <div className="rounded-3xl shadow-lg p-3 bg-sky-100 border-2 border-black max-w-xl mx-auto">
         <div className="flex justify-center items-center w-48 h-48 bg-white rounded-full overflow-hidden shadow-lg mx-auto border-2 border-black">
-          <img
-            src={user_data.profile_picture_url}
-            className="w-full h-full object-cover"
-            alt={`${user_data.first_name} ${user_data.last_name}'s profile`}
-          />
+          {user_data.profile_picture_url ? (
+            <img
+              src={user_data.profile_picture_url}
+              className="w-full h-full object-cover"
+              alt={`${user_data.first_name} ${user_data.last_name}'s profile`}
+            />
+          ) : (
+            <img
+              src={"./images.png"}
+              className="w-1/2 h-1/2 object-cover"
+              alt={`${user_data.first_name} ${user_data.last_name}'s profile`}
+            />
+          )}
         </div>
         <div className="grid grid-cols-2 text-center justify-center items-center mb-4 mx-auto">
           <div className="mx-auto">

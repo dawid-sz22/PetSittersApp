@@ -34,6 +34,8 @@ export const handleLoginAPI = async (email: string, password: string) => {
     localStorage.setItem("tokenPetSitter", token);
     localStorage.setItem("usernamePetSitter", response.data.username);
     localStorage.setItem("userIDPetSitter", response.data.user_id);
+    localStorage.setItem("isPetSitter", response.data.is_pet_sitter.toString().toLowerCase());
+    localStorage.setItem("isPetOwner", response.data.is_pet_owner.toString().toLowerCase());
     window.location.href = "/";
   } catch (e) {
     console.log(e);
@@ -186,6 +188,16 @@ export const getUserDataAPI = async (): Promise<UserData | null> => {
   try {
     setAuthToken();
     const response = await axios.get(`${API_URL}/user/`);
+    if (response.data.is_pet_sitter) {
+      localStorage.setItem("isPetSitter", "true");
+    } else {
+      localStorage.setItem("isPetSitter", "false");
+    }
+    if (response.data.is_pet_owner) {
+      localStorage.setItem("isPetOwner", "true");
+    } else {
+      localStorage.setItem("isPetOwner", "false");
+    }
     return response.data;
   } catch (e) {
     console.log(e);
@@ -355,6 +367,17 @@ export const getPetOwnerAPI = async (
   }
 };
 
+export const deletePetOwnerAPI = async () => {
+  try {
+    setAuthToken();
+    const response = await axios.delete(`${API_URL}/pet_owner/`);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
 export const getSecretUploadUrlAPI = async () => {
   try {
     setAuthToken();
@@ -477,6 +500,17 @@ export const addReviewAPI = async (data: {
       rating: data.rating,
       review: data.review,
     });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const createPetOwnerAPI = async (data: { description_bio: string }) => {
+  try {
+    setAuthToken();
+    const response = await axios.post(`${API_URL}/pet_owner/`, data);
     return response.data;
   } catch (e) {
     console.log(e);

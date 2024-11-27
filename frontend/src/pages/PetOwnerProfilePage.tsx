@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { Visit, PetOwnerData, UserData, Pet } from "../types";
-import { getUserPetOwnerAPI, getUserDataAPI, closeVisitAPI } from "../apiConfig";
+import { Visit, PetOwnerData, UserData, Pet, PetOwner } from "../types";
+import {
+  getUserPetOwnerAPI,
+  getUserDataAPI,
+  closeVisitAPI,
+} from "../apiConfig";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "../components/ErrorFetching";
 import { toast, ToastContainer } from "react-toastify";
@@ -10,6 +14,7 @@ import { EditPetModal } from "../components/modals/EditPetModal";
 import { DeletePetModal } from "../components/modals/DeletePetModal";
 import { PawIcon } from "../assets/PawIcon";
 import { AddReviewModal } from "../components/modals/AddReviewModal";
+import { DeletePetOwnerModal } from "../components/modals/DeletePetOwnerModal";
 
 function PetOwnerProfilePage() {
   const [petOwnerData, setPetOwnerData] = useState<PetOwnerData | null>(null);
@@ -20,6 +25,7 @@ function PetOwnerProfilePage() {
   const [petOwnerVisits, setPetOwnerVisits] = useState<Visit[]>([]);
   const [editingPet, setEditingPet] = useState<Pet | null>(null);
   const [deletingPet, setDeletingPet] = useState<Pet | null>(null);
+  const [deletingPetOwner, setDeletingPetOwner] = useState<PetOwnerData | null>(null);
   const [visitFilter, setVisitFilter] = useState<
     "all" | "pending" | "accepted" | "rejected" | "completed"
   >("pending");
@@ -118,10 +124,12 @@ function PetOwnerProfilePage() {
     const endDate = new Date(visit.date_range_of_visit.upper);
     const now = new Date();
     return endDate > now;
-  };  
+  };
 
-  if (errorFetching) {
-    return <ErrorFetching error={errorFetching} />;
+  if (errorFetching || localStorage.getItem("isPetOwner") === "false") {
+    return (
+      <ErrorFetching error={errorFetching || "Nie jesteś właścicielem zwierząt"} />
+    );
   }
 
   return (
@@ -133,7 +141,7 @@ function PetOwnerProfilePage() {
           <CircularProgress size={60} />
         </div>
       ) : (
-        <div className="bg-gradient-to-b from-sky-100 to-sky-300 pt-10">
+        <div className="bg-gradient-to-b from-sky-100 to-sky-300 pt-10 min-h-screen">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 gap-6">
               {/* Left Column */}
@@ -145,12 +153,20 @@ function PetOwnerProfilePage() {
                   </h2>
                   <div className="bg-white rounded-lg p-4 border-2 border-black">
                     <div className="flex flex-col justify-center items-center mb-4">
-                      <div className="w-64 h-64 rounded-full overflow-hidden border-2 border-black mb-2">
-                        <img
-                          src={userData?.profile_picture_url}
-                          alt="Profile"
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="flex justify-center items-center w-64 h-64 rounded-full overflow-hidden border-2 border-black mb-2">
+                        {userData?.profile_picture_url ? (
+                          <img
+                            src={userData?.profile_picture_url}
+                            className="w-full h-full object-cover"
+                            alt="Profile picture"
+                          />
+                        ) : (
+                          <img
+                            src={"./images.png"}
+                            className="w-1/2 h-1/2 object-cover"
+                            alt="Profile picture"
+                          />
+                        )}
                       </div>
                       <h3 className="text-xl font-bold">
                         {userData?.first_name} {userData?.last_name}
@@ -162,6 +178,14 @@ function PetOwnerProfilePage() {
                       <p className="text-gray-900">
                         {petOwnerData?.description_bio || "Brak opisu"}
                       </p>
+                    </div>
+                    <div className="flex justify-center">
+                      <button
+                        className="bg-red-600 text-white rounded-lg px-6 py-1 mt-2 hover:bg-red-800 font-semibold text-lg shadow-md"
+                        onClick={() => setDeletingPetOwner(petOwnerData)}
+                      >
+                        Usuń konto
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -220,12 +244,20 @@ function PetOwnerProfilePage() {
                             </button>
                           </div>
                           <div className="flex flex-col items-center">
-                            <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-black mb-2">
-                              <img
-                                src={pet.photo_URL || ""}
-                                alt={`${pet.name}'s photo`}
-                                className="w-full h-full object-cover"
-                              />
+                            <div className="flex justify-center items-center w-48 h-48 rounded-full overflow-hidden border-4 border-black mb-2">
+                              {pet.photo_URL ? (
+                                <img
+                                  src={pet.photo_URL}
+                                  alt={`${pet.name}'s photo`}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <img
+                                  src={"./images.png"}
+                                  className="w-1/2 h-1/2 object-cover"
+                                  alt={`${pet.name}'s photo`}
+                                />
+                              )}
                             </div>
                             <div className="w-full">
                               {/* Basic Info Panel */}
@@ -370,11 +402,19 @@ function PetOwnerProfilePage() {
                         >
                           <div className="flex items-start border-b border-gray-300 pb-3 gap-4 mb-4">
                             <div className="flex-shrink-0">
-                              <img
-                                src={visit.pet_data.photo_URL}
-                                alt={`${visit.pet_data.name}'s photo`}
-                                className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
-                              />
+                              {visit.pet_data.photo_URL ? (
+                                <img
+                                  src={visit.pet_data.photo_URL}
+                                  alt={`${visit.pet_data.name}'s photo`}
+                                  className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
+                                />
+                              ) : (
+                                <img
+                                  src={"./images.png"}
+                                  className="w-1/2 h-1/2 object-cover"
+                                  alt={`${visit.pet_data.name}'s photo`}
+                                />
+                              )}
                             </div>
                             <div className="flex flex-col flex-grow">
                               <div className="flex justify-between items-center">
@@ -450,6 +490,7 @@ function PetOwnerProfilePage() {
                           <div className="space-y-2">
                             <div className="flex items-start gap-4 mb-4 border-b border-gray-300 pb-3">
                               <div className="flex-shrink-0">
+                                {visit.pet_sitter_data.user_data.profile_picture_url ? (
                                 <img
                                   src={
                                     visit.pet_sitter_data.user_data
@@ -457,7 +498,14 @@ function PetOwnerProfilePage() {
                                   }
                                   alt={`${visit.pet_data.name}'s photo`}
                                   className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
-                                />
+                                    />
+                                  ) : (
+                                    <img
+                                      src={"./images.png"}
+                                      className="w-1/2 h-1/2 object-cover"
+                                      alt={`${visit.pet_data.name}'s photo`}
+                                    />
+                                  )}
                               </div>
                               <div className="flex flex-row flex-grow justify-between">
                                 <div>
@@ -656,6 +704,16 @@ function PetOwnerProfilePage() {
                   filteredVisits?.find((visit) => visit.id === reviewingVisit)
                     ?.rating
                 }
+              />
+            )}
+            {deletingPetOwner && (
+              <DeletePetOwnerModal
+                isOpen={!!deletingPetOwner}
+                onClose={() => setDeletingPetOwner(null)}
+                onPetOwnerDeleted={() => {
+                  localStorage.setItem("isPetOwner", "false");
+                  window.location.href = "/";
+                }}
               />
             )}
           </div>

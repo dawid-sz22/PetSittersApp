@@ -50,9 +50,9 @@ function HomePage() {
     <>
       <Navbar />
       <ToastContainer />
-      <div className="min-h-screen bg-[url('./assets/bg_register.jpg')] bg-cover">
+      <div className="min-h-screen bg-[url('./assets/bg_register.jpg')] bg-cover bg-fixed">
         <div className="container mx-auto py-80 flex justify-center">
-          <div className="bg-white/80 rounded-2xl shadow-lg p-8 max-w-2xl">
+          <div className="bg-white/80 rounded-2xl shadow-lg p-8 max-w-2xl border-2 border-black">
             <h1 className="text-4xl font-bold text-center mb-12">
               Witaj w Pet Sitters!
             </h1>

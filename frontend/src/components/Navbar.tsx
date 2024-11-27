@@ -10,11 +10,10 @@ import {
   Transition,
 } from "@headlessui/react";
 import { Fragment } from "react";
-import { MenuList } from "@mui/material";
 
 function Navbar() {
   return (
-    <nav className="flex justify-between bg-black items-center p-4 z-50 h-20">
+    <nav className="flex justify-between bg-gradient-to-r from-sky-900 to-sky-600 items-center p-4 z-50 h-20">
       <div className="flex items-center space-x-3 text-white rounded-lg px-3 py-1 text-3xl font-bold">
         <PawIcon width="32" height="32" />
         <Link to={"/"}>Pet Sitters</Link>
@@ -29,7 +28,7 @@ function Navbar() {
           </Link>
         </li>
         <li className="h-8 border-l-2 px-1 border-white"></li>
-        {localStorage.getItem("isPetOwner") ? (
+        {localStorage.getItem("isPetOwner") === "true" ? (
           <li>
             <Link
               to={"/pet-owner-profile"}
@@ -39,7 +38,7 @@ function Navbar() {
             </Link>
           </li>
         ) : null}
-        {localStorage.getItem("isPetSitter") ? (
+        {localStorage.getItem("isPetSitter") === "true" ? (
           <li>
             <Link
               to={"/pet-sitter-profile"}
@@ -53,7 +52,7 @@ function Navbar() {
           <li>
             <Link
               to={"/login"}
-              className="bg-white border-2 border-black text-black text-lg px-3 py-2 font-bold hover:bg-black hover:text-white hover:border-2 hover:border-white"
+              className="bg-white border-2 text-sky-600 text-lg px-3 py-2 font-bold hover:bg-sky-600 hover:text-white hover:border-2 hover:border-white"
             >
               Zaloguj się
             </Link>
@@ -63,7 +62,7 @@ function Navbar() {
           <li>
             <Link
               to={"/register"}
-              className="bg-black border-2 border-white text-white text-lg px-3 py-2 font-bold hover:bg-white hover:text-black"
+              className="bg-sky-600 border-2 border-white text-white text-lg px-3 py-2 font-bold hover:bg-white hover:text-sky-600"
             >
               Zarejestruj się
             </Link>

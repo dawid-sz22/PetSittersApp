@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { handleRegisterAPI } from "../apiConfig.tsx";
+import { getGoogleOAuth2RedirectURL, handleRegisterAPI } from "../apiConfig.tsx";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { isValidPhoneNumber } from "react-phone-number-input";
@@ -112,18 +112,54 @@ function RegisterPage() {
     return;
   };
 
+  const handleGoogleRegister = async () => {
+    setLoading(true);
+    try {
+      const url_redirect = getGoogleOAuth2RedirectURL();
+      window.location.href = url_redirect;
+    } catch (e) {
+      setErrorRegister("Wystąpił błąd podczas rejestracji przez Google");
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
   // Update form element to include `onSubmit` prop
   return (
     <>
       <Navbar />
-      <div className="flex justify-center items-center min-h-screen py-10 bg-[url('./assets/bg_register.jpg')] bg-cover">
+      <div className="flex justify-center items-center min-h-screen py-10 bg-[url('./assets/bg_register.jpg')] bg-cover bg-fixed">
         <form
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md"
         >
-          <h1 className="text-2xl font-semibold text-blue-500 mb-6">
+          <h1 className="text-2xl text-center font-bold text-blue-500 mb-6">
             Rejestracja
           </h1>
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={handleGoogleRegister}
+              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-2"
+              type="button"
+            >
+              <img
+                className="h-6 w-6"
+                src="https://www.svgrepo.com/show/506498/google.svg"
+                alt="Google"
+              />
+              <span className="text-m font-semibold">
+                Zarejestruj się przez Google
+              </span>
+            </button>
+          </div>
+          <div className="relative mt-6 mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">lub wypełniając formularz</span>
+            </div>
+          </div>
           <label className="block mb-4">
             <span className="text-gray-700">*Email:</span>
             <input

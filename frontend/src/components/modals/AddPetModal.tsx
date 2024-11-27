@@ -8,8 +8,8 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
   const [petName, setPetName] = useState("");
   const [petSpecies, setPetSpecies] = useState("");
   const [petBreed, setPetBreed] = useState("");
-  const [petAge, setPetAge] = useState("");
-  const [petWeight, setPetWeight] = useState("");
+  const [petAge, setPetAge] = useState<number>();
+  const [petWeight, setPetWeight] = useState<number>();
   const [petSpecialTreatment, setPetSpecialTreatment] = useState("");
   const [petActivities, setPetActivities] = useState("");
   const [petFeeding, setPetFeeding] = useState("");
@@ -64,7 +64,7 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
         info_special_treatment: petSpecialTreatment || undefined,
         favorite_activities: petActivities || undefined,
         feeding_info: petFeeding || undefined,
-        photo_URL: secretUploadUrl.split("?")[0] || undefined,
+        photo_URL: petPhoto ? secretUploadUrl.split("?")[0] : undefined,
       });
       onClose();
       toast.success("Zwierzę zostało dodane!", {
@@ -83,8 +83,8 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
       setPetName("");
       setPetSpecies("");
       setPetBreed("");
-      setPetAge("");
-      setPetWeight("");
+      setPetAge(undefined);
+      setPetWeight(undefined);
       setPetSpecialTreatment("");
       setPetActivities("");
       setPetFeeding("");
@@ -177,7 +177,7 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
             <input
               type="number"
               value={petAge}
-              onChange={(e) => setPetAge(e.target.value)}
+              onChange={(e) => setPetAge(Number(e.target.value))}
               required
               min="0"
               step="0.1"
@@ -192,7 +192,7 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
             <input
               type="number"
               value={petWeight}
-              onChange={(e) => setPetWeight(e.target.value)}
+              onChange={(e) => setPetWeight(Number(e.target.value))}
               required
               min="0"
               step="0.1"
@@ -215,13 +215,14 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Ulubione aktywności
+              *Ulubione aktywności
             </label>
             <textarea
               value={petActivities}
               onChange={(e) => setPetActivities(e.target.value)}
               className="w-full p-2 border rounded"
               rows={3}
+              required
               placeholder="Np. zabawa piłką, drapanie za uchem, spacery"
             />
           </div>
