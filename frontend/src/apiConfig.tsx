@@ -13,6 +13,24 @@ import {
   PetSitterDetailsTypeEdit,
 } from "./types.tsx";
 
+axios.defaults.withCredentials = true;
+
+function getCsrfToken() {
+    const name = 'csrftoken';
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 const API_URL = "https://petsittersproject.pl/api";
 
 export const setAuthToken = (): void => {
@@ -22,6 +40,7 @@ export const setAuthToken = (): void => {
   } else {
     delete axios.defaults.headers.common["Authorization"];
   }
+  axios.defaults.headers.common['X-CSRFToken'] = getCsrfToken();
 };
 
 export const handleLoginAPI = async (email: string, password: string) => {
