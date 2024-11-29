@@ -429,6 +429,7 @@ export const uploadFileToS3API = async (uploadUrl: string, file: File) => {
         "Content-Type": "multipart/form-data",
         Authorization: null,
       },
+      withCredentials: false
     });
     return response.data;
   } catch (e) {
