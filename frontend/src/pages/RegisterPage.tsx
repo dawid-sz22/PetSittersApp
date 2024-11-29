@@ -112,7 +112,7 @@ function RegisterPage() {
     }
     setLoading(false);
     setErrorRegister("");
-    window.location.href = "/login";
+    window.location.href = "/login?is_registered=true";
 
     return;
   };

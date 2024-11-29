@@ -20,6 +20,7 @@ function LoginPage() {
     const username = searchParams.get("username");
     const is_pet_sitter = searchParams.get("is_pet_sitter");
     const is_pet_owner = searchParams.get("is_pet_owner");
+    const is_registered = searchParams.get("is_registered");
     if (error) {
       toast.error(error);
     }
@@ -29,7 +30,13 @@ function LoginPage() {
       localStorage.setItem("usernamePetSitter", username);
       localStorage.setItem("isPetSitter", is_pet_sitter.toLowerCase());
       localStorage.setItem("isPetOwner", is_pet_owner.toLowerCase());
+
       window.location.href = "/";
+    }
+    if (is_registered) {
+      toast.success("Pomyślnie zarejestrowano! Możesz się teraz zalogować.", {
+        autoClose: 3000,
+      });
     }
   }, [searchParams]);
 
@@ -140,9 +147,7 @@ function LoginPage() {
                 <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  lub
-                </span>
+                <span className="px-2 bg-white text-gray-500">lub</span>
               </div>
             </div>
 
