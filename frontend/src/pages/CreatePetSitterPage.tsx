@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createPetSitterAPI } from "../apiConfig";
 import Navbar from "../components/Navbar";
 import { toast, ToastContainer } from "react-toastify";
@@ -14,7 +14,7 @@ function CreatePetSitterPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await createPetSitterAPI(data);
+      await createPetSitterAPI(data);
       toast.success("Profil opiekuna został utworzony!", {
         onClose: () => {
           window.location.href = "/profile";

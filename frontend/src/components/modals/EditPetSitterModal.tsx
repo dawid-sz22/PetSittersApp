@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Dialog } from "@headlessui/react";
 import { PetSitterDetailsType, PetSitterDetailsTypeEdit } from "../../types";
 import { updatePetSitterAPI } from "../../apiConfig";
 import { toast } from "react-toastify";

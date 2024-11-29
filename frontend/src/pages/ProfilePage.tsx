@@ -10,7 +10,6 @@ import { EmailModal } from "../components/modals/EmailModal";
 import { ProfileModal } from "../components/modals/ProfileModal";
 import { AddressModal } from "../components/modals/AddressModal";
 import { DeleteUserModal } from "../components/modals/DeleteUserModal";
-import { NoImage } from "../assets/NoImage";
 import { CreatePetOwnerModal } from "../components/modals/CreatePetOwnerModal";
 
 function ProfilePage() {

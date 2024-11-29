@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Visit, PetOwnerData, UserData, Pet, PetOwner } from "../types";
+import { Visit, PetOwnerData, UserData, Pet } from "../types";
 import {
   getUserPetOwnerAPI,
   getUserDataAPI,

@@ -9,7 +9,6 @@ import LoginPage from "./pages/LoginPage.tsx";
 import RegisterPage from "./pages/RegisterPage.tsx";
 import ResetPasswordRequest from "./pages/ResetPasswordRequest.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
-import { PetSitterComponent } from "./components/PetSitterComponent.tsx";
 import { PetSittersListPage } from "./pages/PetSittersListPage.tsx";
 import { NotFoundPage } from "./pages/NotFoundPage.tsx";
 import { ProfilePage } from "./pages/ProfilePage.tsx";

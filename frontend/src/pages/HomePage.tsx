@@ -1,4 +1,4 @@
-import { getAllPetSittersAPI, isLoggedIn } from "../apiConfig.tsx";
+import { isLoggedIn } from "../apiConfig.tsx";
 import { getUserDataAPI } from "../apiConfig.tsx";
 import Navbar from "../components/Navbar.tsx";
 import { ToastContainer, toast } from "react-toastify";

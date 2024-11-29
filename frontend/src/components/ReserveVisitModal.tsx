@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getUserPetOwnerAPI, createVisitAPI } from "../apiConfig";
 import { DateTimeRange, Pet, BaseModalProps, Service } from "../types";
 import { CircularProgress, Dialog } from "@mui/material";
-import { DatePicker, DateTimePicker } from "@mantine/dates";
+import { DateTimePicker } from "@mantine/dates";
 import "@mantine/dates/styles.css";
 import "dayjs/locale/pl";
 import { toast, ToastContainer } from "react-toastify";
@@ -127,6 +127,7 @@ function ReserveVisitModal({
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Wybierz zwierzę:
                 </label>
+                {error && <p className="text-red-500">{error}</p>}
                 <select
                   className="w-full p-2 border rounded"
                   value={selectedPet || ""}

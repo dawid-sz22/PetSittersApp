@@ -4,7 +4,6 @@ import {
   acceptVisitAPI,
   getUserPetSitterAPI,
   rejectVisitAPI,
-  closeVisitAPI,
 } from "../apiConfig";
 import { CircularProgress } from "@mui/material";
 import ErrorFetching from "../components/ErrorFetching";

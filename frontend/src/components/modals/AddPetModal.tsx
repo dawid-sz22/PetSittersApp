@@ -15,7 +15,6 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
   const [petFeeding, setPetFeeding] = useState("");
   const [petSpeciesList, setPetSpeciesList] = useState<PetSpecies[]>([]);
   const [secretUploadUrl, setSecretUploadUrl] = useState("");
-  const [photoURL, setPhotoURL] = useState("");
   const [petPhoto, setPetPhoto] = useState<File | null>(null);
 
   useEffect(() => {
@@ -53,8 +52,6 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
           console.error("Error uploading file to S3:", error);
         }
       }
-      console.log(photoURL);
-
       await handleAddPetAPI({
         name: petName,
         species: petSpecies,

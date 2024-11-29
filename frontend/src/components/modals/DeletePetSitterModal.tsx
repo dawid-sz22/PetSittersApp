@@ -1,10 +1,8 @@
 import { BaseModalProps } from "../../types";
 import { deletePetSitterAPI } from "../../apiConfig";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 export function DeletePetSitterModal({ isOpen, onClose }: BaseModalProps) {
-  const navigate = useNavigate();
 
   const handleDelete = async () => {
     try {

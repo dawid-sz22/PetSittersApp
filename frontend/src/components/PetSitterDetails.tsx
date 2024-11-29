@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 import {
   getAllServicesAPI,
   getPetSitterDetailsAPI,
-  getUserPetSitterAPI,
 } from "../apiConfig.tsx";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
@@ -13,7 +12,6 @@ import ErrorFetching from "./ErrorFetching.tsx";
 import Navbar from "./Navbar.tsx";
 import { isLoggedIn } from "../apiConfig.tsx";
 import ReserveVisitModal from "./ReserveVisitModal";
-import { toast } from "react-toastify";
 
 function PetSitterDetails() {
   const { id } = useParams();
@@ -36,6 +34,7 @@ function PetSitterDetails() {
           setVisits(response?.visits || []);
         }
       } catch (error) {
+        setVisitsError("Wystąpił błąd podczas pobierania danych");
         setError("Wystąpił błąd podczas pobierania danych");
       } finally {
         setIsLoading(false);
