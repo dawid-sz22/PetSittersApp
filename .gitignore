@@ -4,3 +4,4 @@
 .env
 /backend/venv
 /backend/staticfiles
+/backend/static
