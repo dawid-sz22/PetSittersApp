@@ -18,9 +18,9 @@ environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-FRONTEND_URL = "http://localhost:5173"
-FRONTEND_URL_REGISTER = "http://localhost:5173/register/"
-FRONTEND_URL_LOGIN = "http://localhost:5173/login"
+FRONTEND_URL = "https://petsitters.pl"
+FRONTEND_URL_REGISTER = "https://petsitters.pl/register/"
+FRONTEND_URL_LOGIN = "https://petsitters.pl/login"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -34,7 +34,7 @@ GOOGLE_OAUTH2_CLIENT_SECRET = env("GOOGLE_OAUTH2_CLIENT_SECRET")
 GOOGLE_OAUTH2_PROJECT_ID = env("GOOGLE_OAUTH2_PROJECT_ID")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -68,9 +68,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:5175"
+    "https://petsitters.pl",
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -149,27 +147,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# AUTHENTICATION_BACKENDS = [
-#     'django.contrib.auth.backends.ModelBackend',
-#     'allauth.account.auth_backends.AuthenticationBackend'
-# ]
-
-# SOCIALACCOUNT_PROVIDERS = {
-#     'google': {
-#         'SCOPE' : [
-#             'profile',
-#             'email'
-#         ],
-#         'APP': {
-#             'client_id': 'X',#env('CLIENT_ID'),
-#             'secret': 'X',#env('CLIENT_SECRET'),
-#         },
-#         'AUTH_PARAMS': {
-#             'access_type':'online',
-#         }
-#     }
-# }
 
 PHONENUMBER_DEFAULT_REGION = 'PL'
 
