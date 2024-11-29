@@ -25,7 +25,7 @@ class OauthServiceGoogle:
         return state
 
     def _get_redirect_uri(self):
-        domain = "http://127.0.0.1:8000"
+        domain = settings.FRONTEND_URL
         redirect_uri = f"{domain}{self.API_URI}"
         return redirect_uri
 
