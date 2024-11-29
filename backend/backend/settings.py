@@ -80,10 +80,10 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-# CSRF_TRUSTED_ORIGINS = [
-#     "https://petsittersproject.pl",
-#     "http://petsittersproject.pl",
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    "https://petsittersproject.pl",
+    "http://petsittersproject.pl",
+]
 
 ROOT_URLCONF = 'backend.urls'
 
