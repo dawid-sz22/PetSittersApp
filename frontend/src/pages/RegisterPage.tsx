@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { getGoogleOAuth2RedirectURL, handleRegisterAPI } from "../apiConfig.tsx";
+import {
+  getGoogleOAuth2RedirectURL,
+  handleRegisterAPI,
+} from "../apiConfig.tsx";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { isValidPhoneNumber } from "react-phone-number-input";
@@ -70,15 +73,17 @@ function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== repeatPassword) {
-      setPasswordError("Podane hasła nie są identyczne");
-      return;
-    } else if (password.length < 8) {
-      setPasswordError("Minimalna wymagana ilość znaków: 8");
-      return;
-    } else if (!isValidPhoneNumber(phoneNumber ? phoneNumber : "")) {
-      setPhoneError("Podany numer telefonu jest niepoprawny");
-      return;
+    if (access_token_google == null) {
+      if (password !== repeatPassword) {
+        setPasswordError("Podane hasła nie są identyczne");
+        return;
+      } else if (password.length < 8) {
+        setPasswordError("Minimalna wymagana ilość znaków: 8");
+        return;
+      } else if (!isValidPhoneNumber(phoneNumber ? phoneNumber : "")) {
+        setPhoneError("Podany numer telefonu jest niepoprawny");
+        return;
+      }
     }
 
     setLoading(true);
@@ -157,7 +162,9 @@ function RegisterPage() {
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">lub wypełniając formularz</span>
+              <span className="px-2 bg-white text-gray-500">
+                lub wypełniając formularz
+              </span>
             </div>
           </div>
           <label className="block mb-4">
