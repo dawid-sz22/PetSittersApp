@@ -59,6 +59,17 @@ export function EditPetModal({
           formData.photo_URL = secretUploadUrl.split("?")[0];
         } catch (error) {
           console.error("Error uploading file to S3:", error);
+          toast.error("Nie udało się dodać zdjęcia", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            style: {
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+              width: "100%",
+            },
+          });
+          return;
         }
       }
 

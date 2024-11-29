@@ -48,6 +48,17 @@ export function ProfileModal({ isOpen, onClose }: BaseModalProps) {
           await uploadFileToS3API(secretUploadUrl, profilePhoto);
         } catch (error) {
           console.error("Error uploading file to S3:", error);
+          toast.error("Nie udało się dodać zdjęcia profilowego", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            style: {
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+              width: "100%",
+            },
+          });
+          return;
         }
       }
 

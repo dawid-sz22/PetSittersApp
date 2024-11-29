@@ -418,12 +418,11 @@ export const getSecretUploadUrlAPI = async () => {
 
 export const uploadFileToS3API = async (uploadUrl: string, file: File) => {
   try {
-    console.log(uploadUrl);
     const response = await axios.put(uploadUrl, file, {
       headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: null,
+        "Content-Type": file.type,
       },
+      transformRequest: [(data) => data],
     });
     return response.data;
   } catch (e) {
