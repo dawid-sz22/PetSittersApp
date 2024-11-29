@@ -24,7 +24,14 @@ class PetOwnerOnlyOrReadOnly(BasePermission):
             return True
 
         return request.user == obj.pet.pet_owner.user
-    
+
+class PetSitterOnlyOrReadOnly(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+
+        return request.user == obj.pet_sitter.user
+
 class AdminOnlyOrReadOnly(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:

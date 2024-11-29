@@ -485,7 +485,7 @@ export const deletePetAPI = async (id: number) => {
 export const acceptVisitAPI = async (visitId: number) => {
   try {
     setAuthToken();
-    const response = await axios.patch(`${API_URL}/visit/${visitId}/`, {
+    const response = await axios.patch(`${API_URL}/visit/${visitId}/accept_reject/`, {
       is_accepted: true,
     });
     return response.data;
@@ -498,7 +498,7 @@ export const acceptVisitAPI = async (visitId: number) => {
 export const rejectVisitAPI = async (visitId: number) => {
   try {
     setAuthToken();
-    const response = await axios.patch(`${API_URL}/visit/${visitId}/`, {
+    const response = await axios.patch(`${API_URL}/visit/${visitId}/accept_reject/`, {
       is_accepted: false,
       is_over: true,
     });

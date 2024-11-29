@@ -281,17 +281,17 @@ function PetSitterProfilePage() {
                             className="p-4 space-y-2 border-b-2 mb-3 border-gray-900 hover:bg-gray-50"
                           >
                             <div className="flex items-start border-b border-gray-300 pb-3 gap-4 mb-4">
-                              <div className="flex-shrink-0">
+                              <div className="flex-shrink-0 w-24 h-24">
                                 {visit.pet_data.photo_URL ? (
                                   <img
                                     src={visit.pet_data.photo_URL}
                                     alt={`${visit.pet_data.name}'s photo`}
-                                    className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
+                                    className="w-full h-full rounded-full object-cover border-2 border-blue-200"
                                   />
                                 ) : (
                                   <img
                                     src={"./images.png"}
-                                    className="w-1/2 h-1/2 object-cover"
+                                    className="w-full h-full object-cover"
                                     alt={`${visit.pet_data.name}'s photo`}
                                   />
                                 )}
@@ -408,20 +408,20 @@ function PetSitterProfilePage() {
                                 <span
                                   className={`px-3 py-1 rounded-full text-m font-medium
                                   ${
-                                    visit.is_over
+                                    visitFilter === "completed"
                                       ? "bg-gray-100 text-gray-800"
-                                      : visit.is_accepted
+                                      : visitFilter === "accepted"
                                       ? "bg-green-100 text-green-800"
-                                      : visit.is_over && !visit.is_accepted
+                                      : visitFilter === "rejected"
                                       ? "bg-red-100 text-red-800"
                                       : "bg-blue-100 text-blue-800"
                                   }`}
                                 >
-                                  {visit.is_over
+                                  {visitFilter === "completed"
                                     ? "Zakończona"
-                                    : visit.is_accepted
+                                    : visitFilter === "accepted"
                                     ? "Zaakceptowana"
-                                    : !visit.is_accepted && !visit.is_over
+                                    : visitFilter === "rejected"
                                     ? "Odrzucona"
                                     : "Oczekująca"}
                                 </span>

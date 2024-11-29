@@ -280,6 +280,11 @@ class VisitGetUpdateSeriallizer(serializers.ModelSerializer):
         fields = ['id', 'pet_sitter', 'pet', 'services', 'rating', 'review', 'price', 'date_range_of_visit',
                   'visit_notes', 'is_accepted', 'is_over','pet_data', 'pet_sitter_data', 'services_data']
 
+class VisitPetSitterAcceptRejectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Visit
+        fields = ['is_accepted', 'is_over']
+
 class UserAuthorizedSerializer(serializers.ModelSerializer):
     is_pet_sitter = serializers.SerializerMethodField()
     is_pet_owner = serializers.SerializerMethodField()

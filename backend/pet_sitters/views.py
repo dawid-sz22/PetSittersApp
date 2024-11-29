@@ -505,12 +505,19 @@ class VisitGetDeletePatchView(generics.GenericAPIView,
     
     def patch(self, request:Request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+
+
+class VisitPetSitterAcceptRejectView(generics.GenericAPIView,
+                       mixins.UpdateModelMixin):
+    
+    permission_classes = [IsAuthenticated, PetSitterOnlyOrReadOnly]
+    queryset = Visit.objects.all()
+    serializer_class = VisitPetSitterAcceptRejectSerializer
+
+    def patch(self, request:Request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)    
         
     
-def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
-
-
 class GetSecretUploadUrl(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
