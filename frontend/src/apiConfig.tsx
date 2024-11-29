@@ -16,19 +16,19 @@ import {
 axios.defaults.withCredentials = true;
 
 function getCsrfToken() {
-    const name = 'csrftoken';
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
+  const name = "csrftoken";
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
     }
-    return cookieValue;
+  }
+  return cookieValue;
 }
 
 const API_URL = "https://petsittersproject.pl/api";
@@ -40,11 +40,11 @@ export const setAuthToken = (): void => {
   } else {
     delete axios.defaults.headers.common["Authorization"];
   }
-  axios.defaults.headers.common['X-CSRFToken'] = getCsrfToken();
+  axios.defaults.headers.common["X-CSRFToken"] = getCsrfToken();
 };
 
 export const setCsrfToken = (): void => {
-  axios.defaults.headers.common['X-CSRFToken'] = getCsrfToken();
+  axios.defaults.headers.common["X-CSRFToken"] = getCsrfToken();
 };
 
 export const handleLoginAPI = async (email: string, password: string) => {
@@ -58,8 +58,14 @@ export const handleLoginAPI = async (email: string, password: string) => {
     localStorage.setItem("tokenPetSitter", token);
     localStorage.setItem("usernamePetSitter", response.data.username);
     localStorage.setItem("userIDPetSitter", response.data.user_id);
-    localStorage.setItem("isPetSitter", response.data.is_pet_sitter.toString().toLowerCase());
-    localStorage.setItem("isPetOwner", response.data.is_pet_owner.toString().toLowerCase());
+    localStorage.setItem(
+      "isPetSitter",
+      response.data.is_pet_sitter.toString().toLowerCase()
+    );
+    localStorage.setItem(
+      "isPetOwner",
+      response.data.is_pet_owner.toString().toLowerCase()
+    );
     window.location.href = "/";
   } catch (e) {
     console.log(e);
@@ -420,9 +426,9 @@ export const uploadFileToS3API = async (uploadUrl: string, file: File) => {
   try {
     const response = await axios.put(uploadUrl, file, {
       headers: {
-        "Content-Type": file.type,
+        "Content-Type": "multipart/form-data",
+        Authorization: null,
       },
-      transformRequest: [(data) => data],
     });
     return response.data;
   } catch (e) {
