@@ -26,22 +26,22 @@ function PetSitterProfilePage() {
     "pending" | "accepted" | "rejected" | "completed" | "all"
   >("pending");
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setIsLoading(true);
-        const user = await getUserPetSitterAPI();
-        setPetSitterDetails(user);
-        setVisits(user?.visits || []);
-        setErrorFetching(null);
-      } catch (err) {
-        setErrorFetching("Nie udało się pobrać danych :(");
-        console.error("Error fetching user data:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchUserData = async () => {
+    try {
+      setIsLoading(true);
+      const user = await getUserPetSitterAPI();
+      setPetSitterDetails(user);
+      setVisits(user?.visits || []);
+      setErrorFetching(null);
+    } catch (err) {
+      setErrorFetching("Nie udało się pobrać danych :(");
+      console.error("Error fetching user data:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUserData();
   }, []);
 
@@ -66,7 +66,6 @@ function PetSitterProfilePage() {
           fontWeight: "bold",
         },
       });
-
     } catch (err) {
       console.error("Error accepting visit:", err);
       toast.error("Nie udało się zaakceptować wizyty", {
@@ -80,6 +79,8 @@ function PetSitterProfilePage() {
     } finally {
       setIsLoadingAcceptingVisit(false);
     }
+    
+    fetchUserData();
   };
 
   const handleRejectVisit = async (visitId: number) => {
@@ -95,11 +96,15 @@ function PetSitterProfilePage() {
           fontWeight: "bold",
         },
       });
-      const updatedVisits = visits.map(visit => visit.id === visitId ? { ...visit, is_over: true } : visit);
+      const updatedVisits = visits.map((visit) =>
+        visit.id === visitId ? { ...visit, is_over: true } : visit
+      );
       setVisits(updatedVisits);
     } finally {
       setIsLoadingAcceptingVisit(false);
     }
+
+    fetchUserData();
   };
 
   const filteredVisits = visits.filter((visit) => {
@@ -119,11 +124,8 @@ function PetSitterProfilePage() {
     }
   });
 
-
   if (errorFetching || localStorage.getItem("isPetSitter") === "false") {
-    return (
-      <ErrorFetching error={errorFetching || "Nie jesteś opiekunem"} />
-    );
+    return <ErrorFetching error={errorFetching || "Nie jesteś opiekunem"} />;
   }
 
   return (
@@ -351,19 +353,20 @@ function PetSitterProfilePage() {
                             <div className="flex flex-col gap-2">
                               <div className="flex items-center justify-start gap-4">
                                 <div className="flex items-center justify-center w-24 h-24">
-                                  {visit.pet_data.pet_owner_data.user_data.profile_picture_url ? (
+                                  {visit.pet_data.pet_owner_data.user_data
+                                    .profile_picture_url ? (
                                     <img
                                       src={
                                         visit.pet_data.pet_owner_data.user_data
-                                        .profile_picture_url
-                                    }
-                                    alt={`${visit.pet_data.pet_owner_data.user_data.first_name}'s photo`}
-                                      className="rounded-full object-cover border-2 border-blue-200"
+                                          .profile_picture_url
+                                      }
+                                      alt={`${visit.pet_data.pet_owner_data.user_data.first_name}'s photo`}
+                                      className="rounded-full w-full h-full object-cover border-2 border-blue-200"
                                     />
                                   ) : (
                                     <img
                                       src={"./images.png"}
-                                      className="w-1/2 h-1/2 object-cover"
+                                      className="w-full h-full object-cover"
                                       alt={`${visit.pet_data.pet_owner_data.user_data.first_name}'s photo`}
                                     />
                                   )}
@@ -408,20 +411,20 @@ function PetSitterProfilePage() {
                                 <span
                                   className={`px-3 py-1 rounded-full text-m font-medium
                                   ${
-                                    visitFilter === "completed"
+                                    visit.is_over && visit.is_accepted
                                       ? "bg-gray-100 text-gray-800"
-                                      : visitFilter === "accepted"
+                                      : visit.is_accepted && !visit.is_over
                                       ? "bg-green-100 text-green-800"
-                                      : visitFilter === "rejected"
+                                      : !visit.is_over && !visit.is_accepted
                                       ? "bg-red-100 text-red-800"
                                       : "bg-blue-100 text-blue-800"
                                   }`}
                                 >
-                                  {visitFilter === "completed"
+                                  {visit.is_over && visit.is_accepted
                                     ? "Zakończona"
-                                    : visitFilter === "accepted"
+                                    : visit.is_accepted && !visit.is_over
                                     ? "Zaakceptowana"
-                                    : visitFilter === "rejected"
+                                    : visit.is_over && !visit.is_accepted
                                     ? "Odrzucona"
                                     : "Oczekująca"}
                                 </span>
