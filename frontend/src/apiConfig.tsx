@@ -43,7 +43,12 @@ export const setAuthToken = (): void => {
   axios.defaults.headers.common['X-CSRFToken'] = getCsrfToken();
 };
 
+export const setCsrfToken = (): void => {
+  axios.defaults.headers.common['X-CSRFToken'] = getCsrfToken();
+};
+
 export const handleLoginAPI = async (email: string, password: string) => {
+  setCsrfToken();
   try {
     const response = await axios.post(`${API_URL}/login/`, {
       email: email,
@@ -104,6 +109,7 @@ export const handleRegisterAPI = async ({
   address_number,
   access_token_google,
 }: registerArguments) => {
+  setCsrfToken();
   try {
     await axios.post(`${API_URL}/register/`, {
       email: email,
@@ -138,6 +144,7 @@ export const handleRegisterAPI = async ({
 };
 
 export const handleRequestPasswordResetAPI = async (email: string) => {
+  setCsrfToken();
   try {
     const response = await axios.post(`${API_URL}/reset_password/`, {
       email: email,
@@ -154,6 +161,7 @@ export const handlePasswordResetAPI = async (
   repeatPassword: string,
   token: string
 ) => {
+  setCsrfToken();
   try {
     const response = await axios.post(
       `${API_URL}/reset_password/change/`,
