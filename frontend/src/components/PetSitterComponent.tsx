@@ -35,7 +35,7 @@ function PetSitterComponent({
           </div>
           <div className="flex flex-row text-sm top-0 right-0 mx-7 space-x-4 text-black items-center justify-center border rounded-full bg-black w-28 h-12">
             <span className="text-yellow-400 font-bold text-lg">
-              {rating}
+              {rating ? `${rating} / 5` : "-"}
             </span>
             <div className="text-yellow-400 text-sm mx-3.5">
               <PawIcon height={"24"} width={"24"} />
