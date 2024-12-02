@@ -6,18 +6,22 @@ import requests
 
 
 class OauthServiceGoogle:
+    # Google OAuth2 callback URI
     API_URI = reverse_lazy("google-oauth2-callback")
-
+    
+    # Google OAuth2 URLs
     GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/auth"
     GOOGLE_ACCESS_TOKEN_OBTAIN_URL = "https://oauth2.googleapis.com/token"
     GOOGLE_USER_INFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
 
+    # Google OAuth2 scopes
     SCOPES = [
         "openid",
         "email",
         "profile",
     ]
 
+    # Create a state session token
     @staticmethod
     def _create_state_session_token():
         state = hashlib.sha256(os.urandom(1024)).hexdigest()
@@ -32,6 +36,7 @@ class OauthServiceGoogle:
     def get_authorization_url(self):
         state = self._create_state_session_token()
 
+        # Prepare parameters for the authorization request
         params_to_send = {
             "response_type": "code",
             "client_id": settings.GOOGLE_OAUTH2_CLIENT_ID,
@@ -50,6 +55,7 @@ class OauthServiceGoogle:
     def get_token(self, code:str):
         redirect_uri = self._get_redirect_uri()
         
+        # Prepare parameters for the token request
         data_to_send = {
             "code": code,
             "client_id": settings.GOOGLE_OAUTH2_CLIENT_ID,
@@ -65,10 +71,13 @@ class OauthServiceGoogle:
         
         token_data = response.json()
         access_token = token_data.get("access_token")
+        
+        # Decode a JWT token
         decoded_id_token = jwt.decode(token_data.get("id_token"), options={"verify_signature": False})
         
         return access_token, decoded_id_token
     
+    # Get user info from Google
     @staticmethod
     def _get_user_info(access_token:str):
         response = requests.get(OauthServiceGoogle.GOOGLE_USER_INFO_URL, params={"access_token": access_token})

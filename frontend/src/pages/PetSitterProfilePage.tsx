@@ -408,6 +408,14 @@ function PetSitterProfilePage() {
                                     </h2>
                                   </div>
                                 </div>
+                                {visit.price && (
+                                  <p className="text-m">
+                                    <span className="font-semibold">
+                                      Cena:{" "}
+                                    </span>
+                                    {visit.price} zł
+                                  </p>
+                                )}
                                 <span
                                   className={`px-3 py-1 rounded-full text-m font-medium
                                   ${
@@ -415,7 +423,7 @@ function PetSitterProfilePage() {
                                       ? "bg-gray-100 text-gray-800"
                                       : visit.is_accepted && !visit.is_over
                                       ? "bg-green-100 text-green-800"
-                                      : !visit.is_over && !visit.is_accepted
+                                      : visit.is_over && !visit.is_accepted
                                       ? "bg-red-100 text-red-800"
                                       : "bg-blue-100 text-blue-800"
                                   }`}

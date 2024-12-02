@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 export function AddressModal({ isOpen, onClose }: BaseModalProps) {
   const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
-  const [postalCode, setPostalCode] = useState("");
+  const [houseNumber, setHouseNumber] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,7 +14,7 @@ export function AddressModal({ isOpen, onClose }: BaseModalProps) {
       await handleUpdateUserAPI({
         address_street: street,
         address_city: city,
-        address_house: postalCode,
+        address_house: houseNumber,
       });
       onClose();
       toast.success("Adres został zmieniony!", {
@@ -30,7 +30,7 @@ export function AddressModal({ isOpen, onClose }: BaseModalProps) {
 
       setStreet("");
       setCity("");
-      setPostalCode("");
+      setHouseNumber("");
     } catch (err) {
       toast.error("Nie udało się zmienić adresu :(", {
         position: "top-center",
@@ -87,19 +87,17 @@ export function AddressModal({ isOpen, onClose }: BaseModalProps) {
           </div>
           <div className="mb-4">
             <label
-              htmlFor="postal-code"
+              htmlFor="house-number"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Kod pocztowy
+              Numer domu
             </label>
             <input
-              id="postal-code"
+              id="house-number"
               type="text"
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
+              value={houseNumber}
+              onChange={(e) => setHouseNumber(e.target.value)}
               required
-              pattern="[0-9]{2}-[0-9]{3}"
-              placeholder="XX-XXX"
               className="w-full p-2 border rounded"
             />
           </div>

@@ -43,6 +43,7 @@ function ReserveVisitModal({
     lower: "",
     upper: "",
   });
+  const [visitNotes, setVisitNotes] = useState<string>("");
 
   useEffect(() => {
     async function fetchPets() {
@@ -77,6 +78,7 @@ function ReserveVisitModal({
         date_range_of_visit: dateRange,
         price: totalCost,
         services: [selectedService.id],
+        visit_notes: visitNotes,
       });
       toast.success("Wizyta została zarezerwowana", {
         position: "top-center",
@@ -235,6 +237,17 @@ function ReserveVisitModal({
                         }}
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Dodatkowe informacje o wizycie:
+                    </label>
+                    <textarea
+                      value={visitNotes} 
+                      onChange={(e) => setVisitNotes(e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
                   </div>
 
                   <div className="mb-6 mt-6 p-4 bg-gray-50 rounded-lg">

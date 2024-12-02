@@ -261,6 +261,17 @@ export const getUserPetOwnerAPI = async (): Promise<PetOwnerData | null> => {
   }
 };
 
+export const updatePetOwnerAPI = async (data: { description_bio: string }) => {
+  try {
+    setAuthToken();
+    const response = await axios.patch(`${API_URL}/pet_owner/`, data);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
 export const updateUserDataAPI = async (
   data: UserData
 ): Promise<UserData | null> => {

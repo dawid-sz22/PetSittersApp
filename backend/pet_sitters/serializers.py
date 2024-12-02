@@ -265,7 +265,7 @@ class VisitCreateSeriallizer(serializers.ModelSerializer):
     services_data = ServiceSerializer(source='services', read_only=True, many=True)
     class Meta:
         model = Visit
-        fields = ['id', 'pet_sitter', 'pet', 'services', 'price', 'date_range_of_visit', 'pet_data', 'pet_sitter_data', 'services_data']
+        fields = ['id', 'pet_sitter', 'pet', 'services', 'price', 'date_range_of_visit', 'visit_notes', 'pet_data', 'pet_sitter_data', 'services_data']
         
 class VisitGetUpdateSeriallizer(serializers.ModelSerializer):
     pet_data = PetWithoutOwnerPetsSerializer(source='pet', read_only=True)

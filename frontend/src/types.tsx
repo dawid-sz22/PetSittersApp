@@ -149,6 +149,7 @@ export type CreateVisitRequest = {
   date_range_of_visit: DateTimeRange;
   price: number;
   services: number[]; // array of service IDs
+  visit_notes: string;
 };
 
 export type GoogleOAuth2RedirectResponse = {

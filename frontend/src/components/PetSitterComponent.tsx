@@ -6,6 +6,7 @@ import { PetSitterDetailsType } from "../types.tsx";
 function PetSitterComponent({
   id,
   user_data,
+  rating,
 }: PetSitterDetailsType) {
   return (
     <>
@@ -33,7 +34,9 @@ function PetSitterComponent({
             <p className="text-gray-600">@{user_data.username}</p>
           </div>
           <div className="flex flex-row text-sm top-0 right-0 mx-7 space-x-4 text-black items-center justify-center border rounded-full bg-black w-28 h-12">
-            <span className="text-yellow-400 font-bold text-lg">2/5</span>
+            <span className="text-yellow-400 font-bold text-lg">
+              {rating}
+            </span>
             <div className="text-yellow-400 text-sm mx-3.5">
               <PawIcon height={"24"} width={"24"} />
             </div>

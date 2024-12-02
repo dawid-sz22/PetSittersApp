@@ -177,7 +177,7 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
               onChange={(e) => setPetAge(Number(e.target.value))}
               required
               min="0"
-              step="0.1"
+              step="1"
               className="w-full p-2 border rounded"
             />
           </div>
@@ -192,7 +192,7 @@ export function AddPetModal({ isOpen, onClose }: BaseModalProps) {
               onChange={(e) => setPetWeight(Number(e.target.value))}
               required
               min="0"
-              step="0.1"
+              step="1"
               className="w-full p-2 border rounded"
             />
           </div>
