@@ -15,7 +15,7 @@ function PetSittersListPage() {
   >();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const itemsPerPage = 3;
+  const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   let currentItems = filteredResults?.slice(indexOfFirstItem, indexOfLastItem);
